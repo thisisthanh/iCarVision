@@ -27,7 +27,7 @@ struct ContentView: View {
                             VStack(spacing: 4) {
                                 Image(systemName: selectedTab == 0 ? "camera.viewfinder" : "camera.viewfinder")
                                     .font(.system(size: 26, weight: .bold))
-                                Text("Nhận diện")
+                                Text("Recognition")
                                     .font(.system(size: 14, weight: .semibold))
                             }
                         }
@@ -37,7 +37,7 @@ struct ContentView: View {
                             VStack(spacing: 4) {
                                 Image(systemName: selectedTab == 1 ? "clock.arrow.circlepath" : "clock.arrow.circlepath")
                                     .font(.system(size: 26, weight: .bold))
-                                Text("Lịch sử")
+                                Text("History")
                                     .font(.system(size: 14, weight: .semibold))
                             }
                         }

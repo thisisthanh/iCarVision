@@ -166,39 +166,59 @@ struct RecognitionView: View {
                     .padding(.bottom, 0)
                 }
                 Spacer(minLength: 0)
-                HStack(spacing: 20) {
+                VStack(spacing: 12) {
+                    HStack(spacing: 20) {
+                        Button(action: {
+                            pickerSource = .photoLibrary
+                            showImagePicker = true
+                        }) {
+                            HStack {
+                                Image(systemName: "photo.on.rectangle")
+                                Text("Library")
+                            }
+                            .font(.title3.bold())
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(LinearGradient(gradient: Gradient(colors: [Color.cyan, Color.blue]), startPoint: .leading, endPoint: .trailing))
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                        }
+                        Button(action: {
+                            pickerSource = .camera
+                            showImagePicker = true
+                        }) {
+                            HStack {
+                                Image(systemName: "camera")
+                                Text("Take Photo")
+                            }
+                            .font(.title3.bold())
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(LinearGradient(gradient: Gradient(colors: [Color.purple, Color.pink]), startPoint: .leading, endPoint: .trailing))
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .purple.opacity(0.3), radius: 8, x: 0, y: 4)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
                     Button(action: {
-                        pickerSource = .photoLibrary
-                        showImagePicker = true
+                        viewModel.uploadImage()
                     }) {
                         HStack {
-                            Image(systemName: "photo.on.rectangle")
-                            Text("Library")
+                            Image(systemName: "car.rear")
+                            Text("Recognize")
                         }
                         .font(.title3.bold())
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(LinearGradient(gradient: Gradient(colors: [Color.cyan, Color.blue]), startPoint: .leading, endPoint: .trailing))
+                        .background(LinearGradient(gradient: Gradient(colors: [Color.pink, Color.orange]), startPoint: .leading, endPoint: .trailing))
                         .foregroundColor(.white)
                         .cornerRadius(16)
-                        .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                        .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
                     }
-                    Button(action: {
-                        pickerSource = .camera
-                        showImagePicker = true
-                    }) {
-                        HStack {
-                            Image(systemName: "camera")
-                            Text("Take Photo")
-                        }
-                        .font(.title3.bold())
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(LinearGradient(gradient: Gradient(colors: [Color.purple, Color.pink]), startPoint: .leading, endPoint: .trailing))
-                        .foregroundColor(.white)
-                        .cornerRadius(16)
-                        .shadow(color: .purple.opacity(0.3), radius: 8, x: 0, y: 4)
-                    }
+                    .frame(height: 56)
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, safeAreaBottomPadding())

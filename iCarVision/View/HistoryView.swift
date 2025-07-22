@@ -6,14 +6,14 @@ struct HistoryView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading) {
-                Text("Lịch sử nhận diện")
+                Text("History")
                     .font(.largeTitle.bold())
                     .foregroundColor(.blue)
                     .padding(.top, 24)
                     .padding(.leading)
                 if viewModel.history.isEmpty {
                     Spacer()
-                    Text("Chưa có lịch sử nhận diện.")
+                    Text("No history records")
                         .foregroundColor(.gray)
                         .font(.title2)
                         .frame(maxWidth: .infinity)

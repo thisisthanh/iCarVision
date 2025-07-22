@@ -19,11 +19,28 @@ class ContentViewModel: ObservableObject {
     var angleProb: Double? { carnetResponse?.angle?.probability }
     var bbox: CarBBox? { carnetResponse?.bbox }
     
+    func addMockToHistoryIfNeeded() {
+        guard let car = carnetResponse?.car else { return }
+        let item = HistoryItem(
+            carName: car.model,
+            carType: carnetResponse?.car?.generation,
+            carColor: carnetResponse?.color?.name,
+            carBrand: car.make,
+            carImageURL: nil, // Nếu có URL ảnh từ API thì truyền vào
+            localImage: nil, // Không có ảnh thật, chỉ mock
+            confidence: Double(car.prob ?? "")
+        )
+        if !history.contains(where: { $0.carName == item.carName && $0.carBrand == item.carBrand }) {
+            history.insert(item, at: 0)
+            saveHistory()
+        }
+    }
+    // Gọi hàm này trong init nếu là mock
     init() {
         loadHistory()
-        // Luôn hiển thị mock UI nếu chưa có response thực tế
         if carnetResponse == nil {
             mockCarnetResponse()
+            addMockToHistoryIfNeeded()
         }
     }
     

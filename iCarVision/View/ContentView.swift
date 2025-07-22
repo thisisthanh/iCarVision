@@ -16,10 +16,6 @@ struct ContentView: View {
                 .ignoresSafeArea()
             VStack(spacing: 0) {
                 Spacer()
-                Rectangle()
-                    .fill(Color.gray.opacity(0.25))
-                    .frame(height: 1)
-                    .edgesIgnoringSafeArea(.horizontal)
                 TabView(selection: $selectedTab) {
                     RecognitionView(viewModel: viewModel)
                         .tag(0)
@@ -42,7 +38,6 @@ struct ContentView: View {
                             }
                         }
                 }
-                .accentColor(Color.purple)
             }
         }
     }

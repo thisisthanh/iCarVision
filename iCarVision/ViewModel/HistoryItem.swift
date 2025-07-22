@@ -23,4 +23,4 @@ struct HistoryItem: Identifiable, Codable {
         self.localImage = localImage
         self.confidence = confidence
     }
-} 
+}

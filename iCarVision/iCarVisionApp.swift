@@ -12,18 +12,7 @@ struct iCarVisionApp: App {
     @StateObject var viewModel = ContentViewModel()
     var body: some Scene {
         WindowGroup {
-            TabView {
-                ContentView(viewModel: viewModel)
-                    .tabItem {
-                        Image(systemName: "camera.viewfinder")
-                        Text("Nhận diện")
-                    }
-                HistoryView(viewModel: viewModel)
-                    .tabItem {
-                        Image(systemName: "clock.arrow.circlepath")
-                        Text("Lịch sử")
-                    }
-            }
+            ContentView(viewModel: viewModel)
         }
     }
 }

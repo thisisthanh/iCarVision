@@ -11,9 +11,15 @@ struct ContentView: View {
     @ObservedObject var viewModel: ContentViewModel
     @State private var selectedTab = 0
     var body: some View {
-        LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.08), Color.purple.opacity(0.08)]), startPoint: .top, endPoint: .bottom)
-            .ignoresSafeArea()
-            .overlay(
+        ZStack(alignment: .bottom) {
+            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.08), Color.purple.opacity(0.08)]), startPoint: .top, endPoint: .bottom)
+                .ignoresSafeArea()
+            VStack(spacing: 0) {
+                Spacer()
+                Rectangle()
+                    .fill(Color.gray.opacity(0.25))
+                    .frame(height: 1)
+                    .edgesIgnoringSafeArea(.horizontal)
                 TabView(selection: $selectedTab) {
                     RecognitionView(viewModel: viewModel)
                         .tag(0)
@@ -37,7 +43,8 @@ struct ContentView: View {
                         }
                 }
                 .accentColor(Color.purple)
-            )
+            }
+        }
     }
 }
 

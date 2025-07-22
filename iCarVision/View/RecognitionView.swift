@@ -119,7 +119,7 @@ struct RecognitionView: View {
                                                 .font(.title3.bold())
                                                 .foregroundColor(.primary)
                                             if let prob = viewModel.prob {
-                                                Text("Độ tin cậy: \(prob)%")
+                                                Text("Confidence: \(prob)%")
                                                     .font(.caption)
                                                     .foregroundColor(.blue)
                                             }
@@ -128,16 +128,16 @@ struct RecognitionView: View {
                                     }
                                     Group {
                                         if let gen = viewModel.generation, !gen.isEmpty {
-                                            self.resultField(title: "Thế hệ", value: gen, icon: "number")
+                                            self.resultField(title: "Generation", value: gen, icon: "number")
                                         }
                                         if let years = viewModel.years, !years.isEmpty {
-                                            self.resultField(title: "Năm SX", value: years, icon: "calendar")
+                                            self.resultField(title: "Year", value: years, icon: "calendar")
                                         }
                                         if let color = viewModel.colorName {
-                                            self.resultField(title: "Màu xe", value: color, icon: "paintpalette.fill")
+                                            self.resultField(title: "Color", value: color, icon: "paintpalette.fill")
                                         }
                                         if let angle = viewModel.angleName {
-                                            self.resultField(title: "Góc chụp", value: angle, icon: "arrow.triangle.turn.up.right.diamond.fill")
+                                            self.resultField(title: "View Angle", value: angle, icon: "arrow.triangle.turn.up.right.diamond.fill")
                                         }
                                         if let bbox = viewModel.bbox {
                                             self.resultField(title: "Bounding Box", value: String(format: "TL:(%.2f, %.2f) - BR:(%.2f, %.2f)", bbox.tl_x ?? 0, bbox.tl_y ?? 0, bbox.br_x ?? 0, bbox.br_y ?? 0), icon: "rectangle.dashed")
@@ -173,7 +173,7 @@ struct RecognitionView: View {
                     }) {
                         HStack {
                             Image(systemName: "photo.on.rectangle")
-                            Text("Chọn từ thư viện")
+                            Text("Library")
                         }
                         .font(.title3.bold())
                         .padding()
@@ -189,7 +189,7 @@ struct RecognitionView: View {
                     }) {
                         HStack {
                             Image(systemName: "camera")
-                            Text("Chụp bằng camera")
+                            Text("Take Photo")
                         }
                         .font(.title3.bold())
                         .padding()

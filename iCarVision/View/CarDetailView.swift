@@ -193,8 +193,9 @@ struct CarInfoSection: View {
                 (item.carType != nil && !item.carType!.isEmpty) {
                 HStack(spacing: 0) {
                     if let confidence = item.confidence, confidence > 0 {
+                        let confidencePercentage = min(confidence, 1.0) * 100
                         StatItem(
-                            value: String(format: "%.0f%%", confidence * 100),
+                            value: String(format: "%.0f%%", confidencePercentage),
                             label: "Confidence",
                             icon: "checkmark.circle.fill",
                             color: .green
@@ -223,7 +224,7 @@ struct CarInfoSection: View {
                         }
                     }
 
-                    if let carType = item.carType, !carType.isEmpty {
+                    if let carType = item.carType, !carType.isEmpty, carType != "N/A" {
                         StatItem(
                             value: carType.components(separatedBy: " ").first ?? carType,
                             label: "Generation",

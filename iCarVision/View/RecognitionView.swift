@@ -6,180 +6,266 @@ struct RecognitionView: View {
     @State private var pickerSource: UIImagePickerController.SourceType = .photoLibrary
     @State private var showSourceActionSheet = false
     @State private var gradientRotation: Double = 0
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        NavigationStack {
+            GeometryReader { geometry in
+                ZStack {
+                    // Background gradient
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.08),
+                            Color.purple.opacity(colorScheme == .dark ? 0.15 : 0.08),
+                        ]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .ignoresSafeArea()
+
+                    ScrollView {
+                        VStack(spacing: 32) {
+                            // Image Section
+                            ImageSection(viewModel: viewModel, gradientRotation: $gradientRotation)
+                            
+                            // Action Buttons
+                            ActionButtonsSection(
+                                viewModel: viewModel,
+                                showImagePicker: $showImagePicker,
+                                pickerSource: $pickerSource
+                            )
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 40)
+                    }
+                    .scrollIndicators(.hidden)
+                }
+            }
+            .navigationTitle("Car Recognition")
+            .navigationBarTitleDisplayMode(.large)
+        }
+                        
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(sourceType: pickerSource, selectedImage: Binding(
+                get: { viewModel.image },
+                set: { viewModel.image = $0 }
+            ))
+        }
+    }
+}
+
+
+
+// MARK: - Image Section
+struct ImageSection: View {
+    @ObservedObject var viewModel: ContentViewModel
+    @Binding var gradientRotation: Double
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            ZStack {
+                if viewModel.isUploading && viewModel.image == nil {
+                    // Loading state
+                    LoadingImageView(gradientRotation: $gradientRotation)
+                } else if viewModel.image == nil {
+                    // Default state
+                    DefaultImageView()
+                } else {
+                    // Selected image
+                    SelectedImageView(image: viewModel.image!)
+                }
+            }
+            .frame(height: 320)
+            .clipShape(RoundedRectangle(cornerRadius: 24))
+            .shadow(
+                color: colorScheme == .dark ? .black.opacity(0.3) : .black.opacity(0.1),
+                radius: 16,
+                x: 0,
+                y: 6
+            )
+        }
+    }
+}
+
+struct LoadingImageView: View {
+    @Binding var gradientRotation: Double
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.08), Color.purple.opacity(0.08)]), startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
-            VStack(spacing: 0) {
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 16) {
-                        // Header
-                        HStack {
-                            Image(systemName: "brain.head.profile")
-                                .font(.system(size: 36, weight: .bold))
-                                .foregroundColor(.blue)
-                                .shadow(color: .blue.opacity(0.3), radius: 4)
-                            Text("iCarVision AI")
-                                .font(.system(size: 32, weight: .bold, design: .rounded))
-                                .foregroundColor(.primary)
-                                .shadow(color: .blue.opacity(0.15), radius: 2)
-                            Spacer()
-                        }
-                        .padding(.top, 8)
-                        .padding(.horizontal)
-                        .padding(.bottom, 4)
-                        
-                        // Ảnh
-                        ZStack {
-                            if viewModel.isUploading && viewModel.image == nil {
-                                // Animated gradient border khi đang chờ API
-                                GeometryReader { geo in
-                                    ZStack {
-                                        Image("2001 Acura CL Series S_00n0n_lvm1Irhg4DP_600x450")
-                                            .resizable()
-                                            .scaledToFill()
-                                            .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 32, style: .continuous)
-                                                    .stroke(
-                                                        AngularGradient(gradient: Gradient(colors: [Color.blue, Color.purple, Color.blue]), center: .center, angle: .degrees(gradientRotation)),
-                                                        lineWidth: 4
-                                                    )
-                                                    .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: gradientRotation)
-                                            )
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 32, style: .continuous)
-                                                    .fill(Color.white.opacity(0.10))
-                                            )
-                                            .frame(width: geo.size.width, height: geo.size.height)
-                                        ProgressView()
-                                            .progressViewStyle(CircularProgressViewStyle(tint: .blue))
-                                            .scaleEffect(2.0)
-                                    }
-                                    .onAppear {
-                                        withAnimation {
-                                            gradientRotation = 360
-                                        }
-                                    }
-                                    .onDisappear {
-                                        gradientRotation = 0
-                                    }
-                                }
-                                .frame(height: UIScreen.main.bounds.height * 0.48)
-                                .padding(8)
-                            } else if viewModel.image == nil {
-                                // Static border khi không upload
-                                Image("2001 Acura CL Series S_00n0n_lvm1Irhg4DP_600x450")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 32, style: .continuous)
-                                            .stroke(
-                                                LinearGradient(gradient: Gradient(colors: [Color.blue, Color.purple]), startPoint: .topLeading, endPoint: .bottomTrailing),
-                                                lineWidth: 4
-                                            )
-                                    )
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 32, style: .continuous)
-                                            .fill(Color.white.opacity(0.10))
-                                    )
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .padding(8)
-                            } else {
-                                Image(uiImage: viewModel.image!)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .cornerRadius(24)
-                                    .clipped()
-                                    .padding(0)
-                                    .transition(.scale.combined(with: .opacity))
-                                    .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.image)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.48)
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 4)
-                        
-
-                        Spacer(minLength: 80)
-                    }
-                    .padding(.bottom, 0)
-                }
-                Spacer(minLength: 0)
-                VStack(spacing: 12) {
-                    HStack(spacing: 20) {
-                        Button(action: {
-                            pickerSource = .photoLibrary
-                            showImagePicker = true
-                        }) {
-                            HStack {
-                                Image(systemName: "photo.on.rectangle")
-                                Text("Library")
-                            }
-                            .font(.title3.bold())
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(LinearGradient(gradient: Gradient(colors: [Color.cyan, Color.blue]), startPoint: .leading, endPoint: .trailing))
-                            .foregroundColor(.white)
-                            .cornerRadius(16)
-                            .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
-                        }
-                        Button(action: {
-                            pickerSource = .camera
-                            showImagePicker = true
-                        }) {
-                            HStack {
-                                Image(systemName: "camera")
-                                Text("Take Photo")
-                            }
-                            .font(.title3.bold())
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(LinearGradient(gradient: Gradient(colors: [Color.purple, Color.pink]), startPoint: .leading, endPoint: .trailing))
-                            .foregroundColor(.white)
-                            .cornerRadius(16)
-                            .shadow(color: .purple.opacity(0.3), radius: 8, x: 0, y: 4)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    Button(action: {
-                        viewModel.uploadImage()
-                    }) {
-                        HStack {
-                            Image(systemName: "car.rear")
-                            Text("Recognize")
-                        }
-                        .font(.title3.bold())
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(LinearGradient(gradient: Gradient(colors: [Color.pink, Color.orange]), startPoint: .leading, endPoint: .trailing))
-                        .foregroundColor(.white)
-                        .cornerRadius(16)
-                        .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
-                    }
-                    .frame(height: 56)
-                }
-                .padding(.horizontal, 20)
-                .padding(.bottom, safeAreaBottomPadding())
+            // Background
+            RoundedRectangle(cornerRadius: 20)
+                .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
+            
+            // Animated border
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(
+                    LinearGradient(
+                        colors: [.blue, .purple, .blue],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 3
+                )
+                .rotationEffect(.degrees(gradientRotation))
+                .animation(.linear(duration: 2).repeatForever(autoreverses: false), value: gradientRotation)
+            
+            VStack(spacing: 16) {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                    .scaleEffect(1.5)
+                
+                Text("Analyzing...")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
             }
-            .sheet(isPresented: $showImagePicker) {
-                ImagePicker(sourceType: pickerSource, selectedImage: Binding(
-                    get: { viewModel.image },
-                    set: { viewModel.image = $0 }
-                ))
+        }
+        .onAppear {
+            gradientRotation = 360
+        }
+    }
+}
+
+struct DefaultImageView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        ZStack {
+            // Background
+            RoundedRectangle(cornerRadius: 20)
+                .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
+            
+            // Border
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(
+                    LinearGradient(
+                        colors: [.blue.opacity(0.5), .purple.opacity(0.5)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 2
+                )
+            
+            VStack(spacing: 20) {
+                Image(systemName: "car.fill")
+                    .font(.system(size: 80, weight: .light))
+                    .foregroundStyle(.tertiary)
+                
+                VStack(spacing: 8) {
+                    Text("Select a car image")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
+                    
+                    Text("Choose from library or take a photo")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
             }
         }
     }
 }
 
-// Thêm view phụ trợ
-extension RecognitionView {
-    func safeAreaBottomPadding() -> CGFloat {
-        UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 16
+struct SelectedImageView: View {
+    let image: UIImage
+    
+    var body: some View {
+        Image(uiImage: image)
+            .resizable()
+            .scaledToFill()
+            .transition(.scale.combined(with: .opacity))
+            .animation(.spring(response: 0.5, dampingFraction: 0.8), value: image)
+    }
+}
+
+// MARK: - Action Buttons Section
+struct ActionButtonsSection: View {
+    @ObservedObject var viewModel: ContentViewModel
+    @Binding var showImagePicker: Bool
+    @Binding var pickerSource: UIImagePickerController.SourceType
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Image source buttons
+            HStack(spacing: 12) {
+                ActionButton(
+                    title: "Library",
+                    icon: "photo.on.rectangle",
+                    gradient: [.blue, .cyan],
+                    action: {
+                        pickerSource = .photoLibrary
+                        showImagePicker = true
+                    }
+                )
+                
+                ActionButton(
+                    title: "Camera",
+                    icon: "camera",
+                    gradient: [.purple, .pink],
+                    action: {
+                        pickerSource = .camera
+                        showImagePicker = true
+                    }
+                )
+            }
+            
+            // Recognize button
+            ActionButton(
+                title: "Recognize Car",
+                icon: "car.rear",
+                gradient: [.orange, .red],
+                isPrimary: true,
+                action: {
+                    viewModel.uploadImage()
+                }
+            )
+            .disabled(viewModel.image == nil)
+            .opacity(viewModel.image == nil ? 0.6 : 1.0)
+        }
+    }
+}
+
+struct ActionButton: View {
+    let title: String
+    let icon: String
+    let gradient: [Color]
+    var isPrimary: Bool = false
+    let action: () -> Void
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: icon)
+                    .font(.title3)
+                
+                Text(title)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+            }
+            .foregroundColor(.white)
+            .padding(.vertical, 16)
+            .padding(.horizontal, 24)
+            .frame(maxWidth: .infinity)
+            .background(
+                LinearGradient(
+                    colors: gradient,
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(
+                color: gradient.first?.opacity(0.3) ?? .black.opacity(0.1),
+                radius: isPrimary ? 12 : 8,
+                x: 0,
+                y: isPrimary ? 6 : 4
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

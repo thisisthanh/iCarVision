@@ -138,8 +138,8 @@ struct RecognitionView: View {
                         .padding(.horizontal, 20)
                         .padding(.bottom, 4)
                         
-                        // Kết quả
-                        if let make = viewModel.make, let model = viewModel.model {
+                        // Kết quả - Chỉ hiển thị khi có dữ liệu thật từ CoreML hoặc Carnet API
+                        if let make = viewModel.make, let model = viewModel.model, !viewModel.recognitionMethod.isEmpty {
                             VStack(alignment: .leading, spacing: 20) {
                                 // Recognition method indicator
                                 HStack {
@@ -201,26 +201,8 @@ struct RecognitionView: View {
                                 .padding()
                                 .transition(.opacity)
                                 .animation(.easeInOut, value: viewModel.errorText)
-                        } else if viewModel.image == nil {
-                            // Show placeholder when no image is selected
-                            VStack(spacing: 16) {
-                                Image(systemName: "car.fill")
-                                    .font(.system(size: 60))
-                                    .foregroundColor(.gray.opacity(0.6))
-                                Text("Chưa có thông tin xe")
-                                    .font(.title2)
-                                    .foregroundColor(.gray)
-                                Text("Chụp ảnh hoặc chọn từ thư viện để nhận diện")
-                                    .font(.caption)
-                                    .foregroundColor(.gray.opacity(0.8))
-                                    .multilineTextAlignment(.center)
-                            }
-                            .padding(40)
-                            .frame(maxWidth: .infinity)
-                            .background(Color.gray.opacity(0.05))
-                            .cornerRadius(16)
-                            .padding(.horizontal, 20)
                         }
+                        // Không hiển thị placeholder khi chưa có thông tin xe
                         Spacer(minLength: 80)
                     }
                     .padding(.bottom, 0)

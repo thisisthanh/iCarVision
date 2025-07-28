@@ -103,64 +103,7 @@ struct RecognitionView: View {
                         .padding(.horizontal, 20)
                         .padding(.bottom, 4)
                         
-                        // Kết quả
-                        if let make = viewModel.make, let model = viewModel.model {
-                            VStack(alignment: .leading, spacing: 20) {
-                                VStack(alignment: .leading, spacing: 10) {
-                                    HStack(alignment: .top, spacing: 16) {
-                                        Image(systemName: "car.fill")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 100, height: 70)
-                                            .cornerRadius(10)
-                                            .foregroundColor(.blue)
-                                        VStack(alignment: .leading, spacing: 4) {
-                                            Text("\(make) \(model)")
-                                                .font(.title3.bold())
-                                                .foregroundColor(.primary)
-                                            if let prob = viewModel.prob {
-                                                Text("Confidence: \(prob)%")
-                                                    .font(.caption)
-                                                    .foregroundColor(.blue)
-                                            }
-                                        }
-                                        Spacer()
-                                    }
-                                    Group {
-                                        if let gen = viewModel.generation, !gen.isEmpty {
-                                            self.resultField(title: "Generation", value: gen, icon: "number")
-                                        }
-                                        if let years = viewModel.years, !years.isEmpty {
-                                            self.resultField(title: "Year", value: years, icon: "calendar")
-                                        }
-                                        if let color = viewModel.colorName {
-                                            self.resultField(title: "Color", value: color, icon: "paintpalette.fill")
-                                        }
-                                        if let angle = viewModel.angleName {
-                                            self.resultField(title: "View Angle", value: angle, icon: "arrow.triangle.turn.up.right.diamond.fill")
-                                        }
-                                        if let bbox = viewModel.bbox {
-                                            self.resultField(title: "Bounding Box", value: String(format: "TL:(%.2f, %.2f) - BR:(%.2f, %.2f)", bbox.tl_x ?? 0, bbox.tl_y ?? 0, bbox.br_x ?? 0, bbox.br_y ?? 0), icon: "rectangle.dashed")
-                                        }
-                                    }
-                                }
-                                .padding(16)
-                                .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.07), Color.blue.opacity(0.18)]), startPoint: .topLeading, endPoint: .bottomTrailing))
-                                .cornerRadius(18)
-                                .shadow(color: .blue.opacity(0.10), radius: 6, x: 0, y: 2)
-                                .transition(.move(edge: .bottom).combined(with: .opacity))
-                                .animation(.spring(response: 0.5, dampingFraction: 0.85), value: viewModel.make)
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.top, 8)
-                        } else if let error = viewModel.errorText {
-                            Text(error)
-                                .foregroundColor(.red)
-                                .font(.headline)
-                                .padding()
-                                .transition(.opacity)
-                                .animation(.easeInOut, value: viewModel.errorText)
-                        }
+
                         Spacer(minLength: 80)
                     }
                     .padding(.bottom, 0)
@@ -235,25 +178,6 @@ struct RecognitionView: View {
 
 // Thêm view phụ trợ
 extension RecognitionView {
-    func resultField(title: String, value: String, icon: String) -> some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: icon)
-                .foregroundColor(.blue)
-                .frame(width: 28)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Text(value)
-                    .font(.body.bold())
-                    .foregroundColor(.primary)
-            }
-        }
-        .padding(8)
-        .background(Color.white.opacity(0.18))
-        .cornerRadius(10)
-    }
-    
     func safeAreaBottomPadding() -> CGFloat {
         UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 16
     }

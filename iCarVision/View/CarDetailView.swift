@@ -381,35 +381,74 @@ struct AIAnalysisSection: View {
 
 struct LoadingIntelligenceView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State private var showButton = false
+    @State private var progress: Double = 0.0
+    @State private var showContent = false
 
     var body: some View {
-        VStack {
-            Button {
-                showButton = false
-                Task { @MainActor in
-                    // Simulate loading completion
-                    try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
-                }
+        VStack(spacing: 20) {
+            // Header with sparkles icon
+            Label("Generate AI Analysis", systemImage: "sparkles")
+                .fontWeight(.bold)
+                .font(.title3)
+                .foregroundStyle(.primary)
+                .opacity(showContent ? 1 : 0)
+                .animation(.easeInOut(duration: 0.5), value: showContent)
+            
+            // Progress bar
+            VStack(spacing: 8) {
+                ProgressView(value: progress, total: 1.0)
+                    .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                    .scaleEffect(x: 1, y: 2, anchor: .center)
+                    .frame(height: 8)
+                
+                Text("Analyzing vehicle data... \(Int(progress * 100))%")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .opacity(showContent ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.5).delay(0.2), value: showContent)
             }
-            label: {
-                Label("Generate AI Analysis", systemImage: "sparkles")
-                    .fontWeight(.bold)
-                    .padding()
-            }
-            .buttonStyle(.bordered)
-            .padding()
-            .opacity(showButton ? 1 : 0)
-            .animation(
-                .easeInOut(duration: 0.5),
-                value: showButton
-            )
-            .onAppear {
-                showButton = true
-            }
-            .transition(.opacity)
+            .padding(.horizontal, 20)
         }
-        .frame(maxWidth: .infinity, alignment: .bottom)
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(.blue.opacity(0.3), lineWidth: 1)
+                )
+        )
+        .shadow(
+            color: colorScheme == .dark ? .black.opacity(0.2) : .black.opacity(0.05),
+            radius: 8,
+            x: 0,
+            y: 2
+        )
+        .padding(.horizontal, 20)
+        .onAppear {
+            startProgressAnimation()
+        }
+    }
+    
+    private func startProgressAnimation() {
+        showContent = true
+        
+        // Simulate progress animation
+        withAnimation(.easeInOut(duration: 0.5)) {
+            progress = 0.3
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            withAnimation(.easeInOut(duration: 0.8)) {
+                progress = 0.7
+            }
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            withAnimation(.easeInOut(duration: 1.0)) {
+                progress = 1.0
+            }
+        }
     }
 }
 

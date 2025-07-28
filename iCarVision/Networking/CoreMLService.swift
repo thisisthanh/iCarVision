@@ -90,17 +90,15 @@ class CoreMLService {
             let topPrediction = topResult.identifier
             let confidence = Double(topResult.confidence)
             
-            // Split the prediction to extract make and model
-            let components = topPrediction.components(separatedBy: " ")
-            let make = components.first ?? "Unknown"
-            let model = components.dropFirst().joined(separator: " ")
+            // Process the prediction to extract make and model
+            let (make, model) = self.processCarModelPrediction(topPrediction)
             
             let carInfo = CarInfo(
                 make: make,
                 model: model,
                 generation: "N/A",
                 years: "N/A",
-                prob: String(format: "%.2f", confidence * 100)
+                prob: String(format: "%.1f", confidence * 100)
             )
             
             completion(.success(carInfo))
@@ -111,6 +109,58 @@ class CoreMLService {
             try handler.perform([request])
         } catch {
             completion(.failure(error))
+        }
+    }
+    
+    private func processCarModelPrediction(_ prediction: String) -> (make: String, model: String) {
+        // Clean up the prediction text
+        let cleanedPrediction = prediction
+            .replacingOccurrences(of: "_", with: " ")
+            .replacingOccurrences(of: "-", with: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Split by spaces and process
+        let components = cleanedPrediction.components(separatedBy: " ")
+        
+        // Common car makes that should be kept together
+        let commonMakes = [
+            "Mercedes", "Benz", "Mercedes-Benz",
+            "Alfa", "Romeo", "Alfa Romeo",
+            "Land", "Rover", "Land Rover",
+            "Rolls", "Royce", "Rolls Royce",
+            "Aston", "Martin", "Aston Martin",
+            "Range", "Rover", "Range Rover"
+        ]
+        
+        // Try to identify make and model
+        if components.count >= 2 {
+            // Check for common two-word makes
+            if components.count >= 3 {
+                let firstTwo = "\(components[0]) \(components[1])"
+                if commonMakes.contains(firstTwo) {
+                    let make = firstTwo
+                    let model = components.dropFirst(2).joined(separator: " ")
+                    return (make: make, model: model.isEmpty ? "Unknown Model" : model)
+                }
+            }
+            
+            // Check for common three-word makes
+            if components.count >= 4 {
+                let firstThree = "\(components[0]) \(components[1]) \(components[2])"
+                if commonMakes.contains(firstThree) {
+                    let make = firstThree
+                    let model = components.dropFirst(3).joined(separator: " ")
+                    return (make: make, model: model.isEmpty ? "Unknown Model" : model)
+                }
+            }
+            
+            // Default: first word is make, rest is model
+            let make = components[0]
+            let model = components.dropFirst().joined(separator: " ")
+            return (make: make, model: model.isEmpty ? "Unknown Model" : model)
+        } else {
+            // Single word - treat as make
+            return (make: cleanedPrediction, model: "Unknown Model")
         }
     }
     
@@ -139,8 +189,11 @@ class CoreMLService {
             let topPrediction = topResult.identifier
             let confidence = Double(topResult.confidence)
             
+            // Process the color prediction to make it more readable
+            let processedColor = self.processColorPrediction(topPrediction)
+            
             let carColor = CarColor(
-                name: topPrediction,
+                name: processedColor,
                 probability: confidence
             )
             
@@ -153,6 +206,56 @@ class CoreMLService {
         } catch {
             completion(.failure(error))
         }
+    }
+    
+    private func processColorPrediction(_ prediction: String) -> String {
+        // Clean up the prediction text
+        let cleanedPrediction = prediction
+            .replacingOccurrences(of: "_", with: " ")
+            .replacingOccurrences(of: "-", with: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+        
+        // Color mapping for better display
+        let colorMapping: [String: String] = [
+            "white": "White",
+            "black": "Black",
+            "red": "Red",
+            "blue": "Blue",
+            "green": "Green",
+            "yellow": "Yellow",
+            "orange": "Orange",
+            "purple": "Purple",
+            "pink": "Pink",
+            "brown": "Brown",
+            "gray": "Gray",
+            "grey": "Gray",
+            "silver": "Silver",
+            "gold": "Gold",
+            "beige": "Beige",
+            "cream": "Cream",
+            "navy": "Navy Blue",
+            "maroon": "Maroon",
+            "burgundy": "Burgundy",
+            "teal": "Teal",
+            "turquoise": "Turquoise",
+            "lime": "Lime Green",
+            "olive": "Olive Green",
+            "tan": "Tan",
+            "champagne": "Champagne",
+            "bronze": "Bronze",
+            "copper": "Copper"
+        ]
+        
+        // Try to find a match in the color mapping
+        for (key, value) in colorMapping {
+            if cleanedPrediction.contains(key) {
+                return value
+            }
+        }
+        
+        // If no match found, capitalize the first letter and return
+        return cleanedPrediction.capitalized
     }
 }
 

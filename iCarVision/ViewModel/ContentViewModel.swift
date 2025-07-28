@@ -67,8 +67,8 @@ class ContentViewModel: ObservableObject {
         errorText = nil
         
         if isOnline {
-            // Use Carnet API when online
-            recognitionMethod = "Carnet API"
+            // Use Carnet API when online - Full featured recognition
+            recognitionMethod = "Carnet API (Online)"
             let apiKey = "<API_KEY>" // <-- Thay bằng API KEY thực tế
             Networking.uploadImage(image: image, apiKey: apiKey) { [weak self] result in
                 DispatchQueue.main.async {
@@ -77,13 +77,15 @@ class ContentViewModel: ObservableObject {
                     case .success(let carnetResponse):
                         self?.carnetResponse = carnetResponse
                         self?.saveToHistory(carImage: image)
+                        print("✅ Carnet API Success: \(carnetResponse.car?.make ?? "") \(carnetResponse.car?.model ?? "")")
                     case .failure(let error):
                         self?.errorText = "Lỗi API: \(error.localizedDescription)"
+                        print("❌ Carnet API Error: \(error.localizedDescription)")
                     }
                 }
             }
         } else {
-            // Use CoreML when offline
+            // Use CoreML when offline - Basic recognition
             recognitionMethod = "CoreML (Offline)"
             coreMLService.classifyCar(image: image) { [weak self] result in
                 DispatchQueue.main.async {
@@ -92,8 +94,10 @@ class ContentViewModel: ObservableObject {
                     case .success(let carnetResponse):
                         self?.carnetResponse = carnetResponse
                         self?.saveToHistory(carImage: image)
+                        print("✅ CoreML Success: \(carnetResponse.car?.make ?? "") \(carnetResponse.car?.model ?? "") - Color: \(carnetResponse.color?.name ?? "")")
                     case .failure(let error):
                         self?.errorText = "Lỗi CoreML: \(error.localizedDescription)"
+                        print("❌ CoreML Error: \(error.localizedDescription)")
                     }
                 }
             }

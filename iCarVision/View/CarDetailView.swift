@@ -92,6 +92,30 @@ struct HeroImageSection: View {
     let item: HistoryItem
     let geometry: GeometryProxy
     @Environment(\.colorScheme) var colorScheme
+    
+    private func formatCarName(_ item: HistoryItem) -> String {
+        var carName = item.carName ?? "Unknown"
+        
+        // Clean up car name
+        if carName.lowercased() == "unknown" {
+            carName = "Unknown Car"
+        }
+        
+        // Add brand if available
+        if let brand = item.carBrand, !brand.isEmpty, brand.lowercased() != "unknown", brand != "N/A" {
+            carName = "\(brand) \(carName)"
+        }
+        
+        // Add generation if available and not too long
+        if let generation = item.carType, !generation.isEmpty, generation.lowercased() != "unknown", generation != "N/A" {
+            let shortGeneration = generation.components(separatedBy: " ").first ?? generation
+            if shortGeneration.count <= 10 { // Only add if generation is short
+                carName = "\(carName) \(shortGeneration)"
+            }
+        }
+        
+        return carName
+    }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -121,18 +145,23 @@ struct HeroImageSection: View {
 
             // Car name overlay
             VStack(alignment: .leading, spacing: 8) {
-                Text(item.carName ?? "Unknown Car")
+                Text(formatCarName(item))
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.5), radius: 4, x: 0, y: 2)
 
-                if let brand = item.carBrand, !brand.isEmpty {
-                    Text(brand)
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.white.opacity(0.9))
-                        .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                if let color = item.carColor, !color.isEmpty, color.lowercased() != "unknown", color != "N/A" {
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(Color.gray)
+                            .frame(width: 10, height: 10)
+                        Text(color)
+                            .font(.title3)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.white.opacity(0.9))
+                            .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -180,8 +209,8 @@ struct CarInfoSection: View {
         VStack(spacing: 20) {
             // Stats Row - Only show if we have at least one piece of data
             if (item.confidence != nil && item.confidence! > 0) ||
-                (item.carColor != nil && !item.carColor!.isEmpty) ||
-                (item.carType != nil && !item.carType!.isEmpty) {
+                (item.carColor != nil && !item.carColor!.isEmpty && item.carColor!.lowercased() != "unknown" && item.carColor! != "N/A") ||
+                (item.carType != nil && !item.carType!.isEmpty && item.carType!.lowercased() != "unknown" && item.carType! != "N/A") {
                 HStack(spacing: 0) {
                     if let confidence = item.confidence, confidence > 0 {
                         let confidencePercentage = min(confidence, 1.0) * 100
@@ -213,7 +242,7 @@ struct CarInfoSection: View {
                         }
                     }
 
-                    if let carColor = item.carColor, !carColor.isEmpty {
+                    if let carColor = item.carColor, !carColor.isEmpty, carColor.lowercased() != "unknown", carColor != "N/A" {
                         StatItem(
                             value: carColor,
                             label: "Color",
@@ -221,14 +250,14 @@ struct CarInfoSection: View {
                             color: .blue
                         )
 
-                        if item.carType != nil && !item.carType!.isEmpty && item.carType != "N/A" {
+                        if let carType = item.carType, !carType.isEmpty, carType.lowercased() != "unknown", carType != "N/A" {
                             Divider()
                                 .frame(height: 40)
                                 .padding(.horizontal, 20)
                         }
                     }
 
-                    if let carType = item.carType, !carType.isEmpty, carType != "N/A" {
+                    if let carType = item.carType, !carType.isEmpty, carType.lowercased() != "unknown", carType != "N/A" {
                         StatItem(
                             value: carType.components(separatedBy: " ").first ?? carType,
                             label: "Generation",
@@ -260,7 +289,7 @@ struct CarInfoSection: View {
             }
 
             // Additional Info
-            if let type = item.carType, type != "N/A" {
+            if let type = item.carType, !type.isEmpty, type.lowercased() != "unknown", type != "N/A" {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Image(systemName: "info.circle.fill")

@@ -553,7 +553,7 @@ struct EnhancedCarIntelligenceView: View {
             LazyVStack(spacing: 16) {
                 if let specifications = intelligence.specifications {
                     EnhancedIntelligenceCard(
-                        title: "🔧 Specifications",
+                        title: "Specifications",
                         content: specifications,
                         color: .blue,
                         icon: "gearshape.fill"
@@ -562,7 +562,7 @@ struct EnhancedCarIntelligenceView: View {
                 
                 if let features = intelligence.features {
                     EnhancedIntelligenceCard(
-                        title: "✨ Features",
+                        title: "Features",
                         content: features,
                         color: .purple,
                         icon: "star.fill"
@@ -580,7 +580,7 @@ struct EnhancedCarIntelligenceView: View {
                 
                 if let marketPosition = intelligence.marketPosition {
                     EnhancedIntelligenceCard(
-                        title: "📊 Market Position",
+                        title: "Market Position",
                         content: marketPosition,
                         color: .orange,
                         icon: "chart.bar.fill"
@@ -591,7 +591,7 @@ struct EnhancedCarIntelligenceView: View {
                 HStack(spacing: 12) {
                     if let pros = intelligence.pros {
                         EnhancedIntelligenceCard(
-                            title: "✅ Pros",
+                            title: "Pros",
                             content: pros,
                             color: .green,
                             icon: "checkmark.circle.fill"
@@ -600,7 +600,7 @@ struct EnhancedCarIntelligenceView: View {
                     
                     if let cons = intelligence.cons {
                         EnhancedIntelligenceCard(
-                            title: "❌ Cons",
+                            title: "Cons",
                             content: cons,
                             color: .red,
                             icon: "xmark.circle.fill"
@@ -610,7 +610,7 @@ struct EnhancedCarIntelligenceView: View {
                 
                 if let ownership = intelligence.ownership {
                     EnhancedIntelligenceCard(
-                        title: "🏠 Ownership Experience",
+                        title: "Ownership Experience",
                         content: ownership,
                         color: .indigo,
                         icon: "house.fill"
@@ -619,7 +619,7 @@ struct EnhancedCarIntelligenceView: View {
                 
                 if let recommendation = intelligence.recommendation {
                     EnhancedIntelligenceCard(
-                        title: "🎯 Recommendation",
+                        title: "Recommendation",
                         content: recommendation,
                         color: .blue,
                         icon: "target",

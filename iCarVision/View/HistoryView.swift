@@ -125,14 +125,14 @@ struct HistoryItemCard: View {
                         .foregroundStyle(.primary)
                         .lineLimit(1)
                     
-                    if let brand = item.carBrand {
+                    if let brand = item.carBrand, !brand.isEmpty {
                         Text(brand)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                     }
                     
-                    if let conf = item.confidence {
+                    if let conf = item.confidence, conf > 0 {
                         HStack(spacing: 4) {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.caption)

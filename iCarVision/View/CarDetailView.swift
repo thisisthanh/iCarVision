@@ -135,7 +135,7 @@ struct HeroImageSection: View {
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.5), radius: 4, x: 0, y: 2)
                 
-                if let brand = item.carBrand {
+                if let brand = item.carBrand, !brand.isEmpty {
                     Text(brand)
                         .font(.title2)
                         .fontWeight(.medium)
@@ -185,57 +185,72 @@ struct CarInfoSection: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            // Stats Row
-            HStack(spacing: 0) {
-                StatItem(
-                    value: item.confidence.map { String(format: "%.0f%%", $0 * 100) } ?? "N/A",
-                    label: "Confidence",
-                    icon: "checkmark.circle.fill",
-                    color: .green
+            // Stats Row - Only show if we have at least one piece of data
+            if (item.confidence != nil && item.confidence! > 0) || 
+               (item.carColor != nil && !item.carColor!.isEmpty) || 
+               (item.carType != nil && !item.carType!.isEmpty) {
+                HStack(spacing: 0) {
+                    if let confidence = item.confidence, confidence > 0 {
+                        StatItem(
+                            value: String(format: "%.0f%%", confidence * 100),
+                            label: "Confidence",
+                            icon: "checkmark.circle.fill",
+                            color: .green
+                        )
+                        
+                        if (item.carColor != nil && !item.carColor!.isEmpty) || 
+                           (item.carType != nil && !item.carType!.isEmpty) {
+                            Divider()
+                                .frame(height: 40)
+                                .padding(.horizontal, 20)
+                        }
+                    }
+                    
+                    if let carColor = item.carColor, !carColor.isEmpty {
+                        StatItem(
+                            value: carColor,
+                            label: "Color",
+                            icon: "paintpalette.fill",
+                            color: .blue
+                        )
+                        
+                        if item.carType != nil && !item.carType!.isEmpty {
+                            Divider()
+                                .frame(height: 40)
+                                .padding(.horizontal, 20)
+                        }
+                    }
+                    
+                    if let carType = item.carType, !carType.isEmpty {
+                        StatItem(
+                            value: carType.components(separatedBy: " ").first ?? carType,
+                            label: "Generation",
+                            icon: "number.circle.fill",
+                            color: .orange
+                        )
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(
+                                    colorScheme == .dark ? Color(.systemGray4) : Color(.systemGray5),
+                                    lineWidth: 0.5
+                                )
+                        )
                 )
-                
-                Divider()
-                    .frame(height: 40)
-                    .padding(.horizontal, 20)
-                
-                StatItem(
-                    value: item.carColor ?? "N/A",
-                    label: "Color",
-                    icon: "paintpalette.fill",
-                    color: .blue
+                .shadow(
+                    color: colorScheme == .dark ? .black.opacity(0.3) : .black.opacity(0.05),
+                    radius: 8,
+                    x: 0,
+                    y: 2
                 )
-                
-                Divider()
-                    .frame(height: 40)
-                    .padding(.horizontal, 20)
-                
-                StatItem(
-                    value: item.carType?.components(separatedBy: " ").first ?? "N/A",
-                    label: "Generation",
-                    icon: "number.circle.fill",
-                    color: .orange
-                )
+                .padding(.horizontal, 20)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(
-                                colorScheme == .dark ? Color(.systemGray4) : Color(.systemGray5),
-                                lineWidth: 0.5
-                            )
-                    )
-            )
-            .shadow(
-                color: colorScheme == .dark ? .black.opacity(0.3) : .black.opacity(0.05),
-                radius: 8,
-                x: 0,
-                y: 2
-            )
-            .padding(.horizontal, 20)
             
             // Additional Info
             if let type = item.carType, !type.isEmpty {

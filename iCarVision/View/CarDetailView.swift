@@ -420,14 +420,14 @@ struct LoadingIntelligenceView: View {
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(
                         LinearGradient(
-                            colors: [.blue, .purple, .blue],
+                            colors: [.red, .orange, .yellow, .green, .blue, .indigo, .purple, .red],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
                         lineWidth: 2
                     )
-                    .rotationEffect(.degrees(progress * 360))
-                    .animation(.linear(duration: 2).repeatForever(autoreverses: false), value: progress)
+                    .hueRotation(.degrees(progress * 360))
+                    .animation(.linear(duration: 3).repeatForever(autoreverses: false), value: progress)
             }
         )
         .shadow(

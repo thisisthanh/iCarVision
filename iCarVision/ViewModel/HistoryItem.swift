@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-struct HistoryItem: Identifiable, Codable {
+struct HistoryItem: Identifiable, Codable, Hashable {
     let id: UUID
     let date: Date
     let carName: String?
@@ -22,5 +22,29 @@ struct HistoryItem: Identifiable, Codable {
         self.carImageURL = carImageURL
         self.localImage = localImage
         self.confidence = confidence
+    }
+    
+    // MARK: - Hashable
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(date)
+        hasher.combine(carName)
+        hasher.combine(carType)
+        hasher.combine(carColor)
+        hasher.combine(carBrand)
+        hasher.combine(carImageURL)
+        hasher.combine(confidence)
+        // Note: We don't hash localImage Data as it can be large and changes frequently
+    }
+    
+    static func == (lhs: HistoryItem, rhs: HistoryItem) -> Bool {
+        return lhs.id == rhs.id &&
+               lhs.date == rhs.date &&
+               lhs.carName == rhs.carName &&
+               lhs.carType == rhs.carType &&
+               lhs.carColor == rhs.carColor &&
+               lhs.carBrand == rhs.carBrand &&
+               lhs.carImageURL == rhs.carImageURL &&
+               lhs.confidence == rhs.confidence
     }
 }

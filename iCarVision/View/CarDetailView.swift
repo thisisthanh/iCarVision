@@ -533,19 +533,25 @@ struct EnhancedCarIntelligenceView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading) {
             if let title = intelligence.title {
-                Text(title)
-                    .font(.title2.bold())
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .leading,
-                            endPoint: .trailing
+                VStack {
+                    Text(title)
+                        .font(.title2.bold())
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.blue, .purple, .pink],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
                         )
-                    )
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.bottom, 8)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.bottom, 8)
+                    
+                    Text("AI can make mistakes. Check important info.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
 
             LazyVStack(spacing: 16) {
@@ -780,14 +786,14 @@ struct EnhancedIntelligenceCard: View {
 #Preview("Enhanced Intelligence Card") {
     VStack(spacing: 16) {
         EnhancedIntelligenceCard(
-            title: "🔧 Specifications",
+            title: "Specifications",
             content: "The Mitsubishi Outlander features a 2.0L or 2.4L engine with CVT transmission. Available in both FWD and AWD configurations with excellent fuel efficiency.",
             color: .blue,
             icon: "gearshape.fill"
         )
 
         EnhancedIntelligenceCard(
-            title: "🎯 Recommendation",
+            title: "Recommendation",
             content: "Perfect for families seeking a reliable, spacious SUV with good fuel economy and comfortable ride quality.",
             color: .blue,
             icon: "target",

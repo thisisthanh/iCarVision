@@ -230,7 +230,7 @@ struct CarInfoSection: View {
                             color: .blue
                         )
 
-                        if item.carType != nil && !item.carType!.isEmpty {
+                        if item.carType != nil && !item.carType!.isEmpty && item.carType != "N/A" {
                             Divider()
                                 .frame(height: 40)
                                 .padding(.horizontal, 20)
@@ -336,8 +336,6 @@ struct AIAnalysisSection: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            // Section Header
-
             VStack(alignment: .center, spacing: 2) {
                 Text("AI-Powered Analysis")
                     .font(.title2)
@@ -725,7 +723,7 @@ struct EnhancedIntelligenceCard: View {
         carBrand: "Mitsubishi",
         carImageURL: nil,
         localImage: nil,
-        confidence: 0.95
+        confidence: 0.30
     )
     return CarDetailView(item: sampleItem)
         .preferredColorScheme(.dark)

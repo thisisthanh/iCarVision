@@ -44,15 +44,6 @@ struct CarDetailView: View {
             .navigationTitle("Car Details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.left")
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.primary)
-                    }
-                }
-
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { /* Share action */ }) {
                         Image(systemName: "square.and.arrow.up")

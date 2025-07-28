@@ -32,11 +32,11 @@ struct RecognitionView: View {
                         
                         // Ảnh
                         ZStack {
-                            if viewModel.isUploading && viewModel.image == nil {
-                                // Animated gradient border khi đang chờ API
+                            if viewModel.isUploading && viewModel.image != nil {
+                                // Animated gradient border khi đang chờ API với ảnh thật
                                 GeometryReader { geo in
                                     ZStack {
-                                        Image("2001 Acura CL Series S_00n0n_lvm1Irhg4DP_600x450")
+                                        Image(uiImage: viewModel.image!)
                                             .resizable()
                                             .scaledToFill()
                                             .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
@@ -68,9 +68,9 @@ struct RecognitionView: View {
                                 }
                                 .frame(height: UIScreen.main.bounds.height * 0.48)
                                 .padding(8)
-                            } else if viewModel.image == nil {
-                                // Static border khi không upload
-                                Image("2001 Acura CL Series S_00n0n_lvm1Irhg4DP_600x450")
+                            } else if let image = viewModel.image {
+                                // Hiển thị ảnh thật được chọn/chụp
+                                Image(uiImage: image)
                                     .resizable()
                                     .scaledToFill()
                                     .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
@@ -87,16 +87,21 @@ struct RecognitionView: View {
                                     )
                                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                                     .padding(8)
-                            } else {
-                                Image(uiImage: viewModel.image!)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .cornerRadius(24)
-                                    .clipped()
-                                    .padding(0)
                                     .transition(.scale.combined(with: .opacity))
                                     .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.image)
+                            } else {
+                                // Placeholder khi chưa có ảnh
+                                RoundedRectangle(cornerRadius: 32, style: .continuous)
+                                    .fill(Color.gray.opacity(0.1))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 32, style: .continuous)
+                                            .stroke(
+                                                LinearGradient(gradient: Gradient(colors: [Color.blue, Color.purple]), startPoint: .topLeading, endPoint: .bottomTrailing),
+                                                lineWidth: 4
+                                            )
+                                    )
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .padding(8)
                             }
                         }
                         .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.48)

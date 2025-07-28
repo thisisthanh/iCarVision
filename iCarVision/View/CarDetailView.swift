@@ -637,6 +637,23 @@ struct EnhancedIntelligenceCard: View {
     let icon: String
     var isHighlighted: Bool = false
     @Environment(\.colorScheme) var colorScheme
+    
+    private func formatContent(_ text: String) -> AttributedString {
+        let formattedText = text.replacingOccurrences(of: ";", with: "\n• ")
+        var attributedString = AttributedString(formattedText)
+        let pattern = "\\b[A-Za-z]+:"
+        let regex = try! NSRegularExpression(pattern: pattern)
+        let range = NSRange(formattedText.startIndex..., in: formattedText)
+        let matches = regex.matches(in: formattedText, range: range)
+        
+        for match in matches.reversed() {
+            if let range = Range(match.range, in: attributedString) {
+                attributedString[range].font = .boldSystemFont(ofSize: 16)
+            }
+        }
+        
+        return attributedString
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -661,9 +678,7 @@ struct EnhancedIntelligenceCard: View {
                 }
             }
 
-            Text(content)
-                .font(.body)
-                .foregroundStyle(.primary)
+            Text(formatContent(content))
                 .lineSpacing(3)
         }
         .padding(16)

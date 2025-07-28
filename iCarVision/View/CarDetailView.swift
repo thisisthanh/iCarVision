@@ -390,7 +390,15 @@ struct LoadingIntelligenceView: View {
             Label("Generate AI Analysis", systemImage: "sparkles")
                 .fontWeight(.bold)
                 .font(.title3)
-                .foregroundStyle(.primary)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.red, .orange, .yellow, .green, .blue, .indigo, .purple, .red],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .hueRotation(.degrees(progress * 360))
+                .animation(.linear(duration: 3).repeatForever(autoreverses: false), value: progress)
                 .opacity(showContent ? 1 : 0)
                 .animation(.easeInOut(duration: 0.5), value: showContent)
             

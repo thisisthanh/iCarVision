@@ -134,10 +134,23 @@ struct HistoryItemCard: View {
                     
                     if let conf = item.confidence, conf > 0 {
                         let confidencePercentage = min(conf, 1.0) * 100
+                        let confidenceColor: Color = {
+                            switch confidencePercentage {
+                            case 90...100:
+                                return .green
+                            case 70..<90:
+                                return .yellow
+                            case 50..<70:
+                                return .orange
+                            default:
+                                return .red
+                            }
+                        }()
+                        
                         HStack(spacing: 4) {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.caption)
-                                .foregroundStyle(.green)
+                                .foregroundStyle(confidenceColor)
                             Text(String(format: "%.0f%% confidence", confidencePercentage))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)

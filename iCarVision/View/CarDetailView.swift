@@ -194,11 +194,24 @@ struct CarInfoSection: View {
                 HStack(spacing: 0) {
                     if let confidence = item.confidence, confidence > 0 {
                         let confidencePercentage = min(confidence, 1.0) * 100
+                        let confidenceColor: Color = {
+                            switch confidencePercentage {
+                            case 90...100:
+                                return .green
+                            case 70..<90:
+                                return .yellow
+                            case 50..<70:
+                                return .orange
+                            default:
+                                return .red
+                            }
+                        }()
+                        
                         StatItem(
                             value: String(format: "%.0f%%", confidencePercentage),
                             label: "Confidence",
                             icon: "checkmark.circle.fill",
-                            color: .green
+                            color: confidenceColor
                         )
 
                         if (item.carColor != nil && !item.carColor!.isEmpty) ||

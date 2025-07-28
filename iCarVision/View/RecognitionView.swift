@@ -172,7 +172,7 @@ struct RecognitionView: View {
                                 Image(systemName: "car.fill")
                                     .font(.system(size: 60))
                                     .foregroundColor(.gray.opacity(0.6))
-                                Text("Chưa có ảnh xe")
+                                Text("Chưa có thông tin xe")
                                     .font(.title2)
                                     .foregroundColor(.gray)
                                 Text("Chụp ảnh hoặc chọn từ thư viện để nhận diện")

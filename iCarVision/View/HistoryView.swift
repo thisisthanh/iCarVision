@@ -254,8 +254,45 @@ struct CarPlaceholderView: View {
 
 
 
-struct HistoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        HistoryView(viewModel: ContentViewModel())
-    }
+#Preview("History View - Empty") {
+    HistoryView(viewModel: ContentViewModel())
+}
+
+#Preview("History View - With Data") {
+    let viewModel = ContentViewModel()
+    viewModel.history = [
+        HistoryItem(
+            carName: "Outlander",
+            carType: "III facelift 2 (2015-2018)",
+            carColor: "Gray/Brown",
+            carBrand: "Mitsubishi",
+            carImageURL: nil,
+            localImage: nil,
+            confidence: 0.95
+        ),
+        HistoryItem(
+            carName: "Civic",
+            carType: "11th generation (2022-present)",
+            carColor: "White",
+            carBrand: "Honda",
+            carImageURL: nil,
+            localImage: nil,
+            confidence: 0.87
+        ),
+        HistoryItem(
+            carName: "Corolla",
+            carType: "12th generation (2019-2023)",
+            carColor: "Blue",
+            carBrand: "Toyota",
+            carImageURL: nil,
+            localImage: nil,
+            confidence: 0.92
+        )
+    ]
+    return HistoryView(viewModel: viewModel)
+}
+
+#Preview("History View - Dark Mode") {
+    HistoryView(viewModel: ContentViewModel())
+        .preferredColorScheme(.dark)
 } 

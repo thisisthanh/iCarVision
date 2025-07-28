@@ -680,4 +680,90 @@ struct EnhancedIntelligenceCard: View {
         .scaleEffect(isHighlighted ? 1.02 : 1.0)
         .animation(.easeInOut(duration: 0.2), value: isHighlighted)
     }
+}
+
+// MARK: - Previews
+#Preview("Car Detail View") {
+    let sampleItem = HistoryItem(
+        carName: "Outlander",
+        carType: "III facelift 2 (2015-2018)",
+        carColor: "Gray/Brown",
+        carBrand: "Mitsubishi",
+        carImageURL: nil,
+        localImage: nil,
+        confidence: 0.95
+    )
+    return CarDetailView(item: sampleItem)
+}
+
+#Preview("Car Detail View - Dark Mode") {
+    let sampleItem = HistoryItem(
+        carName: "Outlander",
+        carType: "III facelift 2 (2015-2018)",
+        carColor: "Gray/Brown",
+        carBrand: "Mitsubishi",
+        carImageURL: nil,
+        localImage: nil,
+        confidence: 0.95
+    )
+    return CarDetailView(item: sampleItem)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Hero Image Section") {
+    let sampleItem = HistoryItem(
+        carName: "Outlander",
+        carType: "III facelift 2 (2015-2018)",
+        carColor: "Gray/Brown",
+        carBrand: "Mitsubishi",
+        carImageURL: nil,
+        localImage: nil,
+        confidence: 0.95
+    )
+    return GeometryReader { geometry in
+        HeroImageSection(item: sampleItem, geometry: geometry)
+    }
+}
+
+#Preview("Car Info Section") {
+    let sampleItem = HistoryItem(
+        carName: "Outlander",
+        carType: "III facelift 2 (2015-2018)",
+        carColor: "Gray/Brown",
+        carBrand: "Mitsubishi",
+        carImageURL: nil,
+        localImage: nil,
+        confidence: 0.95
+    )
+    return CarInfoSection(item: sampleItem)
+}
+
+#Preview("Loading Intelligence View") {
+    LoadingIntelligenceView()
+}
+
+#Preview("Generate Intelligence Button") {
+    GenerateIntelligenceButton {
+        print("Generate tapped")
+    }
+}
+
+#Preview("Enhanced Intelligence Card") {
+    VStack(spacing: 16) {
+        EnhancedIntelligenceCard(
+            title: "🔧 Specifications",
+            content: "The Mitsubishi Outlander features a 2.0L or 2.4L engine with CVT transmission. Available in both FWD and AWD configurations with excellent fuel efficiency.",
+            color: .blue,
+            icon: "gearshape.fill"
+        )
+        
+        EnhancedIntelligenceCard(
+            title: "🎯 Recommendation",
+            content: "Perfect for families seeking a reliable, spacious SUV with good fuel economy and comfortable ride quality.",
+            color: .blue,
+            icon: "target",
+            isHighlighted: true
+        )
+    }
+    .padding()
 } 

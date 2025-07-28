@@ -183,8 +183,24 @@ extension RecognitionView {
     }
 }
 
-struct RecognitionView_Previews: PreviewProvider {
-    static var previews: some View {
-        RecognitionView(viewModel: ContentViewModel())
-    }
+#Preview("Recognition View") {
+    RecognitionView(viewModel: ContentViewModel())
+}
+
+#Preview("Recognition View - Dark Mode") {
+    RecognitionView(viewModel: ContentViewModel())
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Recognition View - With Image") {
+    let viewModel = ContentViewModel()
+    // Simulate having an image
+    viewModel.image = UIImage(systemName: "car.fill")
+    return RecognitionView(viewModel: viewModel)
+}
+
+#Preview("Recognition View - Uploading") {
+    let viewModel = ContentViewModel()
+    viewModel.isUploading = true
+    return RecognitionView(viewModel: viewModel)
 } 

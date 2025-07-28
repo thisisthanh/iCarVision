@@ -6,40 +6,40 @@ struct RecognitionView: View {
     @State private var pickerSource: UIImagePickerController.SourceType = .photoLibrary
     @State private var showSourceActionSheet = false
     @State private var gradientRotation: Double = 0
+    @State private var showCameraAlert = false
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         NavigationStack {
-            GeometryReader { geometry in
-                ZStack {
-                    // Background gradient
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.08),
-                            Color.purple.opacity(colorScheme == .dark ? 0.15 : 0.08),
-                        ]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .ignoresSafeArea()
-                    
-                    ScrollView {
-                        VStack(spacing: 32) {
-                            // Image Section
-                            ImageSection(viewModel: viewModel, gradientRotation: $gradientRotation)
-                            
-                            // Action Buttons
+            ZStack {
+                // Background gradient
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.08),
+                        Color.purple.opacity(colorScheme == .dark ? 0.15 : 0.08),
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(spacing: 32) {
+                        // Image Section
+                        ImageSection(viewModel: viewModel, gradientRotation: $gradientRotation)
+                        
+                                                    // Action Buttons
                             ActionButtonsSection(
                                 viewModel: viewModel,
                                 showImagePicker: $showImagePicker,
-                                pickerSource: $pickerSource
+                                pickerSource: $pickerSource,
+                                showCameraAlert: $showCameraAlert
                             )
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 40)
                     }
-                    .scrollIndicators(.hidden)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 40)
                 }
+                .scrollIndicators(.hidden)
             }
             .navigationTitle("Car Recognition")
             .navigationBarTitleDisplayMode(.large)
@@ -50,6 +50,11 @@ struct RecognitionView: View {
                 get: { viewModel.image },
                 set: { viewModel.image = $0 }
             ))
+        }
+        .alert("Camera Not Available", isPresented: $showCameraAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Camera is not available on this device. Please use Photo Library instead.")
         }
     }
 }
@@ -206,7 +211,21 @@ struct ActionButtonsSection: View {
     @ObservedObject var viewModel: ContentViewModel
     @Binding var showImagePicker: Bool
     @Binding var pickerSource: UIImagePickerController.SourceType
+    @Binding var showCameraAlert: Bool
     @Environment(\.colorScheme) var colorScheme
+    
+    private func checkCameraAvailability() -> Bool {
+        return UIImagePickerController.isSourceTypeAvailable(.camera)
+    }
+    
+    private func openCamera() {
+        if checkCameraAvailability() {
+            pickerSource = .camera
+            showImagePicker = true
+        } else {
+            showCameraAlert = true
+        }
+    }
     
     var body: some View {
         VStack(spacing: 16) {
@@ -226,10 +245,7 @@ struct ActionButtonsSection: View {
                     title: "Camera",
                     icon: "camera",
                     gradient: [.purple, .pink],
-                    action: {
-                        pickerSource = .camera
-                        showImagePicker = true
-                    }
+                    action: openCamera
                 )
             }
             

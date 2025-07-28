@@ -8,17 +8,19 @@ struct HistoryItem: Identifiable, Codable, Hashable {
     let carType: String?
     let carColor: String?
     let carBrand: String?
+    let carYear: String?
     let carImageURL: String?
     let localImage: Data? // Ảnh gốc do user chọn
     let confidence: Double?
     
-    init(date: Date = Date(), carName: String?, carType: String?, carColor: String?, carBrand: String?, carImageURL: String?, localImage: Data?, confidence: Double?) {
+    init(date: Date = Date(), carName: String?, carType: String?, carColor: String?, carBrand: String?, carYear: String?, carImageURL: String?, localImage: Data?, confidence: Double?) {
         self.id = UUID()
         self.date = date
         self.carName = carName
         self.carType = carType
         self.carColor = carColor
         self.carBrand = carBrand
+        self.carYear = carYear
         self.carImageURL = carImageURL
         self.localImage = localImage
         self.confidence = confidence
@@ -32,6 +34,7 @@ struct HistoryItem: Identifiable, Codable, Hashable {
         hasher.combine(carType)
         hasher.combine(carColor)
         hasher.combine(carBrand)
+        hasher.combine(carYear)
         hasher.combine(carImageURL)
         hasher.combine(confidence)
         // Note: We don't hash localImage Data as it can be large and changes frequently
@@ -44,6 +47,7 @@ struct HistoryItem: Identifiable, Codable, Hashable {
                lhs.carType == rhs.carType &&
                lhs.carColor == rhs.carColor &&
                lhs.carBrand == rhs.carBrand &&
+               lhs.carYear == rhs.carYear &&
                lhs.carImageURL == rhs.carImageURL &&
                lhs.confidence == rhs.confidence
     }

@@ -28,6 +28,7 @@ class ContentViewModel: ObservableObject {
             carType: nil, // No longer using generation
             carColor: carnetResponse?.color?.name,
             carBrand: nil, // No longer using separate brand
+            carYear: car.year, // Save year information
             carImageURL: nil, // Nếu có URL ảnh từ API thì truyền vào
             localImage: nil, // Không có ảnh thật, chỉ mock
             confidence: Double(car.prob ?? "")
@@ -240,6 +241,7 @@ class ContentViewModel: ObservableObject {
             carType: nil, // No longer using generation
             carColor: carColor,
             carBrand: nil, // No longer using separate brand
+            carYear: carInfo.year, // Save year information
             carImageURL: nil,
             localImage: carImage.jpegData(compressionQuality: 0.8),
             confidence: confidenceValue / 100.0

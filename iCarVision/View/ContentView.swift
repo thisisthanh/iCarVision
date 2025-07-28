@@ -52,33 +52,3 @@ struct ContentView: View {
 #Preview("Content View") {
     ContentView(viewModel: ContentViewModel())
 }
-
-#Preview("Content View - Dark Mode") {
-    ContentView(viewModel: ContentViewModel())
-        .preferredColorScheme(.dark)
-}
-
-#Preview("Content View - With History") {
-    let viewModel = ContentViewModel()
-    viewModel.history = [
-        HistoryItem(
-            carName: "Outlander",
-            carType: "III facelift 2 (2015-2018)",
-            carColor: "Gray/Brown",
-            carBrand: "Mitsubishi",
-            carImageURL: nil,
-            localImage: nil,
-            confidence: 0.95
-        ),
-        HistoryItem(
-            carName: "Civic",
-            carType: "11th generation (2022-present)",
-            carColor: "White",
-            carBrand: "Honda",
-            carImageURL: nil,
-            localImage: nil,
-            confidence: 0.87
-        )
-    ]
-    return ContentView(viewModel: viewModel)
-}

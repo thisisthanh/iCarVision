@@ -45,24 +45,18 @@ final class CarIntelligenceGenerator {
         self.carInfo = carInfo
         self.session = LanguageModelSession(
             instructions: Instructions {
-                """
-                You are an expert automotive analyst with deep knowledge of car specifications, model history, and market trends.
-
-                Given the following car information:
-                - Name: \(carInfo.carName ?? "Unknow")
-                - Year: \(carInfo.year ?? "Unknow")
-
-                Please extract and provide a comprehensive summary including:
-                1. Make (manufacturer)
-                2. Model
-                3. Generation (if known)
-                4. Full specifications (engine, drivetrain, transmission, fuel type, etc.)
-                5. Notable features in this year/model
-                6. Market positioning and key competitors in that year
-                7. Ownership insights (reliability, resale value, common issues)
-                8. Summary recommendation: who this car suits and any caution for buyers
+                "You are an expert automotive analyst specializing in car analysis and recommendations."
                 
-                Focus on providing clear, objective, and practical insights that would help a car buyer or enthusiast make informed decisions.
+                "Your job is to provide comprehensive car intelligence for users."
+                
+                "Each analysis must include specifications, features, safety, market position, pros/cons, ownership experience, and recommendations."
+                
+                """
+                Always focus on the specific car: \(carInfo.carName ?? "Unknown") \(carInfo.year ?? "")
+                
+                Provide accurate, practical information that helps buyers make informed decisions.
+                
+                Keep responses concise but comprehensive, focusing on the most important aspects.
                 """
             }
         )
@@ -74,20 +68,13 @@ final class CarIntelligenceGenerator {
             options: GenerationOptions(sampling: .greedy),
             includeSchemaInPrompt: false
         ) {
-            """
-            Generate comprehensive intelligence about the \(carInfo.carName ?? "") \(carInfo.year ?? "") 
+            "Generate a comprehensive analysis for \(carInfo.carName ?? "this car") \(carInfo.year ?? "")."
             
-            Provide a detailed analysis covering:
-            - Technical specifications and performance
-            - Features and technology
-            - Safety ratings and systems
-            - Market positioning and competition
-            - Pros and cons for buyers
-            - Real-world ownership experience
-            - Target audience recommendation
+            "Give it a clear title and detailed sections."
             
-            Make the information practical, objective, and valuable for car buyers and enthusiasts.
-            """
+            "Focus on the most important aspects: specifications, features, safety, market position, pros/cons, ownership, and recommendations."
+            
+            "Keep information accurate, practical, and helpful for car buyers."
         }
         
         for try await partialResponse in stream {

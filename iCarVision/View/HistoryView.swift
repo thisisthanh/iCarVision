@@ -148,6 +148,17 @@ struct HistoryItemCard: View {
                         }
                     }
                     
+                    if let year = item.carYear, !year.isEmpty {
+                        HStack(spacing: 4) {
+                            Image(systemName: "calendar")
+                                .font(.caption)
+                                .foregroundStyle(.orange)
+                            Text(year)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    
                     if let conf = item.confidence, conf > 0 {
                         let confidencePercentage = min(conf, 1.0) * 100
                         let confidenceColor: Color = {
@@ -296,6 +307,7 @@ struct CarPlaceholderView: View {
             carType: nil,
             carColor: "Gray/Brown",
             carBrand: "Mitsubishi",
+            carYear: "2015",
             carImageURL: nil,
             localImage: nil,
             confidence: 0.95
@@ -305,6 +317,7 @@ struct CarPlaceholderView: View {
             carType: nil,
             carColor: "White",
             carBrand: "Honda",
+            carYear: "2020",
             carImageURL: nil,
             localImage: nil,
             confidence: 0.87
@@ -314,6 +327,7 @@ struct CarPlaceholderView: View {
             carType: nil,
             carColor: "Blue",
             carBrand: "Toyota",
+            carYear: "2019",
             carImageURL: nil,
             localImage: nil,
             confidence: 0.92

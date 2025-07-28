@@ -207,7 +207,8 @@ struct CarInfoSection: View {
         VStack(spacing: 20) {
             // Stats Row - Only show if we have at least one piece of data
             if (item.confidence != nil && item.confidence! > 0) ||
-                (item.carColor != nil && !item.carColor!.isEmpty && item.carColor!.lowercased() != "unknown" && item.carColor! != "N/A") {
+                (item.carColor != nil && !item.carColor!.isEmpty && item.carColor!.lowercased() != "unknown" && item.carColor! != "N/A") ||
+                (item.carYear != nil && !item.carYear!.isEmpty) {
                 HStack(spacing: 0) {
                     if let confidence = item.confidence, confidence > 0 {
                         let confidencePercentage = min(confidence, 1.0) * 100
@@ -244,6 +245,21 @@ struct CarInfoSection: View {
                             label: "Color",
                             icon: "paintpalette.fill",
                             color: .blue
+                        )
+
+                        if let carYear = item.carYear, !carYear.isEmpty {
+                            Divider()
+                                .frame(height: 40)
+                                .padding(.horizontal, 20)
+                        }
+                    }
+
+                    if let carYear = item.carYear, !carYear.isEmpty {
+                        StatItem(
+                            value: carYear,
+                            label: "Year",
+                            icon: "calendar",
+                            color: .orange
                         )
                     }
                 }
@@ -718,6 +734,7 @@ struct EnhancedIntelligenceCard: View {
         carType: nil,
         carColor: "Gray/Brown",
         carBrand: "Mitsubishi",
+        carYear: "2015",
         carImageURL: nil,
         localImage: nil,
         confidence: 0.95
@@ -731,6 +748,7 @@ struct EnhancedIntelligenceCard: View {
         carType: nil,
         carColor: "Gray/Brown",
         carBrand: "Mitsubishi",
+        carYear: "2015",
         carImageURL: nil,
         localImage: nil,
         confidence: 0.30
@@ -745,6 +763,7 @@ struct EnhancedIntelligenceCard: View {
         carType: nil,
         carColor: "Gray/Brown",
         carBrand: "Mitsubishi",
+        carYear: "2015",
         carImageURL: nil,
         localImage: nil,
         confidence: 0.95
@@ -760,6 +779,7 @@ struct EnhancedIntelligenceCard: View {
         carType: nil,
         carColor: "Gray/Brown",
         carBrand: "Mitsubishi",
+        carYear: "2015",
         carImageURL: nil,
         localImage: nil,
         confidence: 0.95

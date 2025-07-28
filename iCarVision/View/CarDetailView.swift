@@ -335,20 +335,6 @@ struct AIAnalysisSection: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        VStack(spacing: 20) {
-            VStack(alignment: .center, spacing: 2) {
-                Text("AI-Powered Analysis")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.primary)
-
-                Text("Intelligent insights about this vehicle")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-        }
 
         // Content
         if isLoadingIntelligence {
@@ -395,76 +381,35 @@ struct AIAnalysisSection: View {
 
 struct LoadingIntelligenceView: View {
     @Environment(\.colorScheme) var colorScheme
+    @State private var showButton = false
 
     var body: some View {
-        VStack(spacing: 20) {
-            // Animated loading icon
-            ZStack {
-                Circle()
-                    .stroke(
-                        LinearGradient(
-                            colors: [.blue.opacity(0.3), .purple.opacity(0.3)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 4
-                    )
-                    .frame(width: 60, height: 60)
-
-                Circle()
-                    .trim(from: 0, to: 0.7)
-                    .stroke(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        style: StrokeStyle(lineWidth: 4, lineCap: .round)
-                    )
-                    .frame(width: 60, height: 60)
-                    .rotationEffect(.degrees(-90))
-                    .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: UUID())
-
-                Image(systemName: "brain.head.profile")
-                    .font(.title2)
-                    .foregroundStyle(.blue)
+        VStack {
+            Button {
+                showButton = false
+                Task { @MainActor in
+                    // Simulate loading completion
+                    try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+                }
             }
-
-            VStack(spacing: 8) {
-                Text("Analyzing Vehicle...")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.primary)
-
-                Text("Our AI is generating comprehensive insights about this car")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
+            label: {
+                Label("Generate AI Analysis", systemImage: "sparkles")
+                    .fontWeight(.bold)
+                    .padding()
             }
+            .buttonStyle(.bordered)
+            .padding()
+            .opacity(showButton ? 1 : 0)
+            .animation(
+                .easeInOut(duration: 0.5),
+                value: showButton
+            )
+            .onAppear {
+                showButton = true
+            }
+            .transition(.opacity)
         }
-        .padding(40)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(
-                            LinearGradient(
-                                colors: [.blue.opacity(0.3), .purple.opacity(0.3)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 1
-                        )
-                )
-        )
-        .shadow(
-            color: colorScheme == .dark ? .black.opacity(0.3) : .black.opacity(0.05),
-            radius: 12,
-            x: 0,
-            y: 4
-        )
-        .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity, alignment: .bottom)
     }
 }
 

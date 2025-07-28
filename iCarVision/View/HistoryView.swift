@@ -162,6 +162,7 @@ struct CarDetailSheet: View {
         }
     }
     
+    @MainActor
     private func generateCarIntelligence() {
         guard let carName = item.carName,
               let carBrand = item.carBrand,
@@ -181,13 +182,9 @@ struct CarDetailSheet: View {
         Task {
             do {
                 try await carIntelligenceGenerator?.generateCarIntelligence()
-                await MainActor.run {
-                    isLoadingIntelligence = false
-                }
+                isLoadingIntelligence = false
             } catch {
-                await MainActor.run {
-                    isLoadingIntelligence = false
-                }
+                isLoadingIntelligence = false
             }
         }
     }

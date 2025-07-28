@@ -69,6 +69,7 @@ class ContentViewModel: ObservableObject {
         }
     }
     
+    @MainActor
     func generateCarIntelligence(for carInfo: CarInfo) {
         carIntelligenceGenerator = CarIntelligenceGenerator(carInfo: carInfo)
         carIntelligenceGenerator?.prewarm()
@@ -77,9 +78,7 @@ class ContentViewModel: ObservableObject {
             do {
                 try await carIntelligenceGenerator?.generateCarIntelligence()
             } catch {
-                DispatchQueue.main.async {
-                    self.errorText = "Lỗi tạo thông tin xe: \(error.localizedDescription)"
-                }
+                self.errorText = "Lỗi tạo thông tin xe: \(error.localizedDescription)"
             }
         }
     }

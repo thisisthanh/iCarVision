@@ -111,6 +111,30 @@ struct HistoryItemCard: View {
     let onTap: () -> Void
     @Environment(\.colorScheme) var colorScheme
     
+    private func formatCarName(_ item: HistoryItem) -> String {
+        var carName = item.carName ?? "Unknown"
+        
+        // Clean up car name
+        if carName.lowercased() == "unknown" {
+            carName = "Unknown Car"
+        }
+        
+        // Add brand if available
+        if let brand = item.carBrand, !brand.isEmpty, brand.lowercased() != "unknown" {
+            carName = "\(brand) \(carName)"
+        }
+        
+        // Add generation if available and not too long
+        if let generation = item.carType, !generation.isEmpty, generation.lowercased() != "unknown" {
+            let shortGeneration = generation.components(separatedBy: " ").first ?? generation
+            if shortGeneration.count <= 10 { // Only add if generation is short
+                carName = "\(carName) \(shortGeneration)"
+            }
+        }
+        
+        return carName
+    }
+    
     var body: some View {
         Button(action: onTap) {
             HStack(alignment: .center, spacing: 16) {
@@ -119,17 +143,22 @@ struct HistoryItemCard: View {
                 
                 // Car details
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(item.carName ?? "Unknown Car")
+                    Text(formatCarName(item))
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundStyle(.primary)
                         .lineLimit(1)
                     
-                    if let brand = item.carBrand, !brand.isEmpty {
-                        Text(brand)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
+                    if let color = item.carColor, !color.isEmpty, color.lowercased() != "unknown" {
+                        HStack(spacing: 4) {
+                            Circle()
+                                .fill(Color.gray)
+                                .frame(width: 8, height: 8)
+                            Text(color)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
                     }
                     
                     if let conf = item.confidence, conf > 0 {

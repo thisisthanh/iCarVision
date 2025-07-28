@@ -1,59 +1,75 @@
-# 🚗 CarVision AI
+# iCarVision - AI Car Recognition App
 
-CarVision AI is an innovative mobile application that transforms your smartphone into a powerful automotive identification tool.  
-Simply **point**, **snap**, and **discover** as cutting-edge artificial intelligence instantly reveals the secrets hidden in every car photo!
+Ứng dụng iOS sử dụng AI để nhận diện thông tin xe hơi từ ảnh.
 
----
+## Tính năng
 
-## 🎯 Core Concept
+### 🚗 Nhận diện xe hơi
+- **Online Mode**: Sử dụng Carnet API để nhận diện chi tiết
+- **Offline Mode**: Sử dụng CoreML models để nhận diện cơ bản
+- Tự động chuyển đổi giữa online/offline dựa trên kết nối internet
 
-Imagine walking down the street and spotting that gorgeous car parked at the corner.  
-You wonder: _"What make is that? What year? I love that color!"_  
-With **CarVision AI**, curiosity meets technology in the most delightful way possible.  
-One quick photo is all it takes to unlock a treasure trove of automotive intelligence.
+### 📱 Giao diện
+- Chụp ảnh trực tiếp từ camera
+- Chọn ảnh từ thư viện
+- Hiển thị thông tin chi tiết về xe
+- Lưu lịch sử nhận diện
 
----
+### 🤖 AI Models
+- **CarModelClassifier.mlmodel**: Nhận diện hãng và model xe
+- **CarColorClassifier.mlmodel**: Nhận diện màu sắc xe
 
-## ✨ Key Features
+## Cách sử dụng
 
-### 📸 Instant Car Recognition
+1. **Mở camera**: Nhấn "Take Photo" để chụp ảnh xe
+2. **Chọn ảnh**: Nhấn "Library" để chọn ảnh từ thư viện
+3. **Nhận diện**: Nhấn "Recognize" để phân tích ảnh
+4. **Xem kết quả**: Thông tin xe sẽ hiển thị bao gồm:
+   - Hãng xe (Make)
+   - Model xe (Model)
+   - Thế hệ (Generation) - N/A khi offline
+   - Năm sản xuất (Year) - N/A khi offline
+   - Màu sắc (Color)
+   - Góc nhìn (View Angle) - N/A khi offline
+   - Độ tin cậy (Confidence)
 
-- **Snap & Analyze**  
-  Take a photo of any vehicle and get instant results.
+## Cài đặt
 
-- **Smart Detection**  
-  Advanced computer vision algorithms identify cars from any angle.
+1. Clone repository
+2. Mở file `iCarVision.xcodeproj` trong Xcode
+3. Thêm API key Carnet vào `ContentViewModel.swift` (dòng có `<API_KEY>`)
+4. Build và chạy ứng dụng
 
-- **Lightning Fast**  
-  Results in under 3 seconds — faster than asking a car enthusiast!
+## Cấu trúc project
 
----
+```
+iCarVision/
+├── Models/                    # CoreML models
+│   ├── CarModelClassifier.mlmodel
+│   └── CarColorClassifier.mlmodel
+├── View/                      # SwiftUI Views
+│   ├── ContentView.swift
+│   ├── RecognitionView.swift
+│   └── HistoryView.swift
+├── ViewModel/                 # ViewModels
+│   ├── ContentViewModel.swift
+│   └── HistoryItem.swift
+├── Networking/                # Network services
+│   ├── Networking.swift
+│   ├── NetworkMonitor.swift
+│   └── CoreMLService.swift
+├── Component/                 # Reusable components
+│   └── ImagePicker.swift
+└── Assets.xcassets/          # App assets
+```
 
-## 📱 Coming Soon
+## Quyền cần thiết
 
-- Detailed vehicle specs
-- Historical insights (e.g. model year ranges)
-- Color recognition and matching
-- Save & organize car history
-- API integration for enthusiasts & developers
+- **Camera**: Để chụp ảnh xe
+- **Photo Library**: Để chọn ảnh từ thư viện
 
----
+## Lưu ý
 
-## 🛠️ Tech Stack
-
-- Swift / SwiftUI (iOS)
-- CoreML / Vision framework
-- Custom-trained ML models (e.g. MobileNet, YOLO)
-- RESTful APIs for extended data
-
----
-
-## 🤝 Contributing
-
-We welcome contributors! Please fork this repository, create a feature branch, and submit a pull request.
-
----
-
-## 📄 License
-
-MIT License. See `LICENSE` file for details.
+- Khi online: Sử dụng Carnet API với đầy đủ thông tin
+- Khi offline: Sử dụng CoreML models với thông tin cơ bản (hãng, model, màu sắc)
+- Các trường không có dữ liệu sẽ hiển thị "N/A"

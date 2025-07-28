@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import Combine
 
 class ContentViewModel: ObservableObject {
     @Published var image: UIImage? = nil
@@ -7,6 +8,11 @@ class ContentViewModel: ObservableObject {
     @Published var carnetResponse: CarNetResponse? = nil
     @Published var errorText: String? = nil
     @Published var history: [HistoryItem] = []
+    @Published var isOnline: Bool = false
+    @Published var recognitionMethod: String = ""
+    
+    private let networkMonitor = NetworkMonitor()
+    private let coreMLService = CoreMLService()
     
     var make: String? { carnetResponse?.car?.make }
     var model: String? { carnetResponse?.car?.model }
@@ -35,30 +41,60 @@ class ContentViewModel: ObservableObject {
             saveHistory()
         }
     }
-    // Gọi hàm này trong init nếu là mock
     init() {
         loadHistory()
+        setupNetworkMonitoring()
+        
+        // Inspect CoreML models to understand their structure
+        CoreMLInspector.inspectModels()
+        
         if carnetResponse == nil {
             mockCarnetResponse()
             addMockToHistoryIfNeeded()
         }
     }
     
+    private func setupNetworkMonitoring() {
+        networkMonitor.$isConnected
+            .assign(to: &$isOnline)
+    }
+    
     func uploadImage() {
         guard let image = image else { return }
-        let apiKey = "<API_KEY>" // <-- Thay bằng API KEY thực tế
+        
         isUploading = true
         carnetResponse = nil
         errorText = nil
-        Networking.uploadImage(image: image, apiKey: apiKey) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isUploading = false
-                switch result {
-                case .success(let carnetResponse):
-                    self?.carnetResponse = carnetResponse
-                    // Có thể lưu vào history nếu muốn
-                case .failure(let error):
-                    self?.errorText = "Lỗi: \(error.localizedDescription)"
+        
+        if isOnline {
+            // Use Carnet API when online
+            recognitionMethod = "Carnet API"
+            let apiKey = "<API_KEY>" // <-- Thay bằng API KEY thực tế
+            Networking.uploadImage(image: image, apiKey: apiKey) { [weak self] result in
+                DispatchQueue.main.async {
+                    self?.isUploading = false
+                    switch result {
+                    case .success(let carnetResponse):
+                        self?.carnetResponse = carnetResponse
+                        self?.saveToHistory(carImage: image)
+                    case .failure(let error):
+                        self?.errorText = "Lỗi API: \(error.localizedDescription)"
+                    }
+                }
+            }
+        } else {
+            // Use CoreML when offline
+            recognitionMethod = "CoreML (Offline)"
+            coreMLService.classifyCar(image: image) { [weak self] result in
+                DispatchQueue.main.async {
+                    self?.isUploading = false
+                    switch result {
+                    case .success(let carnetResponse):
+                        self?.carnetResponse = carnetResponse
+                        self?.saveToHistory(carImage: image)
+                    case .failure(let error):
+                        self?.errorText = "Lỗi CoreML: \(error.localizedDescription)"
+                    }
                 }
             }
         }

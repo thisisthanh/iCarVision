@@ -1,4 +1,4 @@
-import SwiftUI
+    import SwiftUI
 
 struct RecognitionView: View {
     @ObservedObject var viewModel: ContentViewModel
@@ -106,6 +106,20 @@ struct RecognitionView: View {
                         // Kết quả
                         if let make = viewModel.make, let model = viewModel.model {
                             VStack(alignment: .leading, spacing: 20) {
+                                // Recognition method indicator
+                                HStack {
+                                    Image(systemName: viewModel.isOnline ? "wifi" : "wifi.slash")
+                                        .foregroundColor(viewModel.isOnline ? .green : .orange)
+                                    Text(viewModel.recognitionMethod)
+                                        .font(.caption)
+                                        .foregroundColor(viewModel.isOnline ? .green : .orange)
+                                    Spacer()
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(Color.gray.opacity(0.1))
+                                .cornerRadius(8)
+                                
                                 VStack(alignment: .leading, spacing: 10) {
                                     HStack(alignment: .top, spacing: 16) {
                                         Image(systemName: "car.fill")
@@ -127,18 +141,10 @@ struct RecognitionView: View {
                                         Spacer()
                                     }
                                     Group {
-                                        if let gen = viewModel.generation, !gen.isEmpty {
-                                            self.resultField(title: "Generation", value: gen, icon: "number")
-                                        }
-                                        if let years = viewModel.years, !years.isEmpty {
-                                            self.resultField(title: "Year", value: years, icon: "calendar")
-                                        }
-                                        if let color = viewModel.colorName {
-                                            self.resultField(title: "Color", value: color, icon: "paintpalette.fill")
-                                        }
-                                        if let angle = viewModel.angleName {
-                                            self.resultField(title: "View Angle", value: angle, icon: "arrow.triangle.turn.up.right.diamond.fill")
-                                        }
+                                        self.resultField(title: "Generation", value: viewModel.generation ?? "N/A", icon: "number")
+                                        self.resultField(title: "Year", value: viewModel.years ?? "N/A", icon: "calendar")
+                                        self.resultField(title: "Color", value: viewModel.colorName ?? "N/A", icon: "paintpalette.fill")
+                                        self.resultField(title: "View Angle", value: viewModel.angleName ?? "N/A", icon: "arrow.triangle.turn.up.right.diamond.fill")
                                         if let bbox = viewModel.bbox {
                                             self.resultField(title: "Bounding Box", value: String(format: "TL:(%.2f, %.2f) - BR:(%.2f, %.2f)", bbox.tl_x ?? 0, bbox.tl_y ?? 0, bbox.br_x ?? 0, bbox.br_y ?? 0), icon: "rectangle.dashed")
                                         }
@@ -238,7 +244,7 @@ extension RecognitionView {
     func resultField(title: String, value: String, icon: String) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: icon)
-                .foregroundColor(.blue)
+                .foregroundColor(value == "N/A" ? .gray : .blue)
                 .frame(width: 28)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -246,7 +252,7 @@ extension RecognitionView {
                     .foregroundColor(.secondary)
                 Text(value)
                     .font(.body.bold())
-                    .foregroundColor(.primary)
+                    .foregroundColor(value == "N/A" ? .gray : .primary)
             }
         }
         .padding(8)

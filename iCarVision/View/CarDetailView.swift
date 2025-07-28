@@ -411,12 +411,24 @@ struct LoadingIntelligenceView: View {
         }
         .padding(20)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(.blue.opacity(0.3), lineWidth: 1)
-                )
+            ZStack {
+                // Base background
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
+                
+                // Animated gradient border
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(
+                        LinearGradient(
+                            colors: [.blue, .purple, .blue],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 2
+                    )
+                    .rotationEffect(.degrees(progress * 360))
+                    .animation(.linear(duration: 2).repeatForever(autoreverses: false), value: progress)
+            }
         )
         .shadow(
             color: colorScheme == .dark ? .black.opacity(0.2) : .black.opacity(0.05),

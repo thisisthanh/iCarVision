@@ -48,10 +48,8 @@ class ContentViewModel: ObservableObject {
         // Inspect CoreML models to understand their structure
         CoreMLInspector.inspectModels()
         
-        if carnetResponse == nil {
-            mockCarnetResponse()
-            addMockToHistoryIfNeeded()
-        }
+        // Don't show mock data on startup - only show when user actually recognizes
+        // carnetResponse will be nil initially, which is fine
     }
     
     private func setupNetworkMonitoring() {
@@ -65,6 +63,9 @@ class ContentViewModel: ObservableObject {
         isUploading = true
         carnetResponse = nil
         errorText = nil
+        
+        // Clear any previous results when starting new recognition
+        print("🔄 Starting recognition with \(isOnline ? "Carnet API" : "CoreML")")
         
         if isOnline {
             // Use Carnet API when online - Full featured recognition
@@ -129,6 +130,13 @@ class ContentViewModel: ObservableObject {
            let items = try? JSONDecoder().decode([HistoryItem].self, from: data) {
             history = items
         }
+    }
+    
+    // Reset results when new image is selected
+    func resetResults() {
+        carnetResponse = nil
+        errorText = nil
+        recognitionMethod = ""
     }
     
     // Hàm mock dữ liệu mẫu cho UI demo

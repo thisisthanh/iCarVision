@@ -166,6 +166,25 @@ struct RecognitionView: View {
                                 .padding()
                                 .transition(.opacity)
                                 .animation(.easeInOut, value: viewModel.errorText)
+                        } else if viewModel.image == nil {
+                            // Show placeholder when no image is selected
+                            VStack(spacing: 16) {
+                                Image(systemName: "car.fill")
+                                    .font(.system(size: 60))
+                                    .foregroundColor(.gray.opacity(0.6))
+                                Text("Chưa có ảnh xe")
+                                    .font(.title2)
+                                    .foregroundColor(.gray)
+                                Text("Chụp ảnh hoặc chọn từ thư viện để nhận diện")
+                                    .font(.caption)
+                                    .foregroundColor(.gray.opacity(0.8))
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding(40)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.gray.opacity(0.05))
+                            .cornerRadius(16)
+                            .padding(.horizontal, 20)
                         }
                         Spacer(minLength: 80)
                     }
@@ -232,7 +251,13 @@ struct RecognitionView: View {
             .sheet(isPresented: $showImagePicker) {
                 ImagePicker(sourceType: pickerSource, selectedImage: Binding(
                     get: { viewModel.image },
-                    set: { viewModel.image = $0 }
+                    set: { 
+                        viewModel.image = $0
+                        // Reset results when new image is selected
+                        if $0 != nil {
+                            viewModel.resetResults()
+                        }
+                    }
                 ))
             }
         }

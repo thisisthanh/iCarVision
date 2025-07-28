@@ -22,7 +22,7 @@ struct RecognitionView: View {
                         endPoint: .bottom
                     )
                     .ignoresSafeArea()
-
+                    
                     ScrollView {
                         VStack(spacing: 32) {
                             // Image Section
@@ -44,7 +44,7 @@ struct RecognitionView: View {
             .navigationTitle("Car Recognition")
             .navigationBarTitleDisplayMode(.large)
         }
-                        
+        
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(sourceType: pickerSource, selectedImage: Binding(
                 get: { viewModel.image },
@@ -170,13 +170,34 @@ struct DefaultImageView: View {
 
 struct SelectedImageView: View {
     let image: UIImage
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        Image(uiImage: image)
-            .resizable()
-            .scaledToFill()
-            .transition(.scale.combined(with: .opacity))
-            .animation(.spring(response: 0.5, dampingFraction: 0.8), value: image)
+        GeometryReader { geometry in
+            ZStack {
+                // Background
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
+                
+                // Border
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(
+                        LinearGradient(
+                            colors: [.blue.opacity(0.5), .purple.opacity(0.5)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 2
+                    )
+                
+                // Image
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .clipped()
+            }
+        }
     }
 }
 
@@ -289,4 +310,4 @@ struct ActionButton: View {
     let viewModel = ContentViewModel()
     viewModel.isUploading = true
     return RecognitionView(viewModel: viewModel)
-} 
+}

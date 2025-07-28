@@ -7,6 +7,7 @@ class ContentViewModel: ObservableObject {
     @Published var carnetResponse: CarNetResponse? = nil
     @Published var errorText: String? = nil
     @Published var history: [HistoryItem] = []
+    @Published var carIntelligenceGenerator: CarIntelligenceGenerator?
     
     var make: String? { carnetResponse?.car?.make }
     var model: String? { carnetResponse?.car?.model }
@@ -56,9 +57,28 @@ class ContentViewModel: ObservableObject {
                 switch result {
                 case .success(let carnetResponse):
                     self?.carnetResponse = carnetResponse
+                    // Generate car intelligence when we have car info
+                    if let carInfo = carnetResponse.car {
+                        self?.generateCarIntelligence(for: carInfo)
+                    }
                     // Có thể lưu vào history nếu muốn
                 case .failure(let error):
                     self?.errorText = "Lỗi: \(error.localizedDescription)"
+                }
+            }
+        }
+    }
+    
+    func generateCarIntelligence(for carInfo: CarInfo) {
+        carIntelligenceGenerator = CarIntelligenceGenerator(carInfo: carInfo)
+        carIntelligenceGenerator?.prewarm()
+        
+        Task {
+            do {
+                try await carIntelligenceGenerator?.generateCarIntelligence()
+            } catch {
+                DispatchQueue.main.async {
+                    self.errorText = "Lỗi tạo thông tin xe: \(error.localizedDescription)"
                 }
             }
         }

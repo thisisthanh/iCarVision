@@ -13,7 +13,7 @@ struct CarInfo: Decodable {
     let model: String?
     let generation: String?
     let years: String?
-    let prob: String? // Xác suất nhận diện, dạng "100.00"
+    let prob: String?
 }
 
 struct CarColor: Decodable {

@@ -14,7 +14,6 @@ struct RecognitionView: View {
             VStack(spacing: 0) {
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 16) {
-                        // Header
                         HStack {
                             Image(systemName: "brain.head.profile")
                                 .font(.system(size: 36, weight: .bold))
@@ -30,10 +29,8 @@ struct RecognitionView: View {
                         .padding(.horizontal)
                         .padding(.bottom, 4)
                         
-                        // Ảnh
                         ZStack {
                             if viewModel.isUploading && viewModel.image != nil {
-                                // Animated gradient border khi đang chờ API với ảnh thật
                                 GeometryReader { geo in
                                     ZStack {
                                         Image(uiImage: viewModel.image!)
@@ -69,7 +66,6 @@ struct RecognitionView: View {
                                 .frame(height: UIScreen.main.bounds.height * 0.48)
                                 .padding(8)
                             } else if let image = viewModel.image {
-                                // Hiển thị ảnh thật được chọn/chụp
                                 Image(uiImage: image)
                                     .resizable()
                                     .scaledToFill()
@@ -90,7 +86,6 @@ struct RecognitionView: View {
                                     .transition(.scale.combined(with: .opacity))
                                     .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.image)
                             } else {
-                                // Placeholder khi chưa có ảnh - To và đẹp hơn
                                 VStack(spacing: 20) {
                                     Image(systemName: "camera.fill")
                                         .font(.system(size: 80, weight: .light))
@@ -138,10 +133,8 @@ struct RecognitionView: View {
                         .padding(.horizontal, 20)
                         .padding(.bottom, 4)
                         
-                        // Kết quả - Chỉ hiển thị khi có dữ liệu thật từ CoreML hoặc Carnet API
                         if let make = viewModel.make, let model = viewModel.model, !viewModel.recognitionMethod.isEmpty {
                             VStack(alignment: .leading, spacing: 20) {
-                                // Recognition method indicator
                                 HStack {
                                     Image(systemName: viewModel.isOnline ? "wifi" : "wifi.slash")
                                         .foregroundColor(viewModel.isOnline ? .green : .orange)
@@ -202,7 +195,6 @@ struct RecognitionView: View {
                                 .transition(.opacity)
                                 .animation(.easeInOut, value: viewModel.errorText)
                         }
-                        // Không hiển thị placeholder khi chưa có thông tin xe
                         Spacer(minLength: 80)
                     }
                     .padding(.bottom, 0)
@@ -270,7 +262,6 @@ struct RecognitionView: View {
                     get: { viewModel.image },
                     set: { 
                         viewModel.image = $0
-                        // Reset results when new image is selected
                         if $0 != nil {
                             viewModel.resetResults()
                         }
@@ -281,7 +272,6 @@ struct RecognitionView: View {
     }
 }
 
-// Thêm view phụ trợ
 extension RecognitionView {
     func resultField(title: String, value: String, icon: String) -> some View {
         HStack(alignment: .top, spacing: 10) {

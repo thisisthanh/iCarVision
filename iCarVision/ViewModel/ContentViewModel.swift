@@ -32,8 +32,8 @@ class ContentViewModel: ObservableObject {
             carType: carnetResponse?.car?.generation,
             carColor: carnetResponse?.color?.name,
             carBrand: car.make,
-            carImageURL: nil, // Nếu có URL ảnh từ API thì truyền vào
-            localImage: nil, // Không có ảnh thật, chỉ mock
+            carImageURL: nil,
+            localImage: nil,
             confidence: Double(car.prob ?? "")
         )
         if !history.contains(where: { $0.carName == item.carName && $0.carBrand == item.carBrand }) {
@@ -45,11 +45,7 @@ class ContentViewModel: ObservableObject {
         loadHistory()
         setupNetworkMonitoring()
         
-        // Inspect CoreML models to understand their structure
         CoreMLInspector.inspectModels()
-        
-        // Don't show mock data on startup - only show when user actually recognizes
-        // carnetResponse will be nil initially, which is fine
     }
     
     private func setupNetworkMonitoring() {
@@ -64,13 +60,11 @@ class ContentViewModel: ObservableObject {
         carnetResponse = nil
         errorText = nil
         
-        // Clear any previous results when starting new recognition
         print("🔄 Starting recognition with \(isOnline ? "Carnet API" : "CoreML")")
         
         if isOnline {
-            // Use Carnet API when online - Full featured recognition
             recognitionMethod = "Carnet API (Online)"
-            let apiKey = "<API_KEY>" // <-- Thay bằng API KEY thực tế
+            let apiKey = "<API_KEY>"
             Networking.uploadImage(image: image, apiKey: apiKey) { [weak self] result in
                 DispatchQueue.main.async {
                     self?.isUploading = false
@@ -86,7 +80,6 @@ class ContentViewModel: ObservableObject {
                 }
             }
         } else {
-            // Use CoreML when offline - Basic recognition
             recognitionMethod = "CoreML (Offline)"
             coreMLService.classifyCar(image: image) { [weak self] result in
                 DispatchQueue.main.async {
@@ -111,7 +104,7 @@ class ContentViewModel: ObservableObject {
             carType: carnetResponse?.car?.generation,
             carColor: carnetResponse?.color?.name,
             carBrand: carnetResponse?.car?.make,
-            carImageURL: nil, // Nếu có URL ảnh từ API thì truyền vào
+            carImageURL: nil,
             localImage: carImage.jpegData(compressionQuality: 0.8),
             confidence: Double(carnetResponse?.car?.prob ?? "")
         )
@@ -132,14 +125,12 @@ class ContentViewModel: ObservableObject {
         }
     }
     
-    // Reset results when new image is selected
     func resetResults() {
         carnetResponse = nil
         errorText = nil
         recognitionMethod = ""
     }
     
-    // Hàm mock dữ liệu mẫu cho UI demo
     func mockCarnetResponse() {
         let car = CarInfo(make: "Mitsubishi", model: "Outlander", generation: "III facelift 2 (2015-2018)", years: "2015-2018", prob: "100.00")
         let color = CarColor(name: "Gray/Brown", probability: 0.7926)

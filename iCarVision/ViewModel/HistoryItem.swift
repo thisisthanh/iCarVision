@@ -9,7 +9,7 @@ struct HistoryItem: Identifiable, Codable {
     let carColor: String?
     let carBrand: String?
     let carImageURL: String?
-    let localImage: Data? // Ảnh gốc do user chọn
+    let localImage: Data?
     let confidence: Double?
     
     init(date: Date = Date(), carName: String?, carType: String?, carColor: String?, carBrand: String?, carImageURL: String?, localImage: Data?, confidence: Double?) {

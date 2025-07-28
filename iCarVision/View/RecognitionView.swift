@@ -90,18 +90,48 @@ struct RecognitionView: View {
                                     .transition(.scale.combined(with: .opacity))
                                     .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.image)
                             } else {
-                                // Placeholder khi chưa có ảnh
-                                RoundedRectangle(cornerRadius: 32, style: .continuous)
-                                    .fill(Color.gray.opacity(0.1))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 32, style: .continuous)
-                                            .stroke(
-                                                LinearGradient(gradient: Gradient(colors: [Color.blue, Color.purple]), startPoint: .topLeading, endPoint: .bottomTrailing),
-                                                lineWidth: 4
+                                // Placeholder khi chưa có ảnh - To và đẹp hơn
+                                VStack(spacing: 20) {
+                                    Image(systemName: "camera.fill")
+                                        .font(.system(size: 80, weight: .light))
+                                        .foregroundColor(.blue.opacity(0.6))
+                                    
+                                    VStack(spacing: 8) {
+                                        Text("Chụp ảnh xe")
+                                            .font(.title2.bold())
+                                            .foregroundColor(.primary)
+                                        
+                                        Text("hoặc chọn từ thư viện")
+                                            .font(.body)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 32, style: .continuous)
+                                        .fill(
+                                            LinearGradient(
+                                                gradient: Gradient(colors: [
+                                                    Color.blue.opacity(0.05),
+                                                    Color.purple.opacity(0.05)
+                                                ]),
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
                                             )
-                                    )
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .padding(8)
+                                        )
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 32, style: .continuous)
+                                                .stroke(
+                                                    LinearGradient(
+                                                        gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.3)]),
+                                                        startPoint: .topLeading,
+                                                        endPoint: .bottomTrailing
+                                                    ),
+                                                    lineWidth: 3
+                                                )
+                                        )
+                                )
+                                .padding(8)
                             }
                         }
                         .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.48)

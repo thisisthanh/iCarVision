@@ -200,58 +200,108 @@ struct CarIntelligenceView: View {
                     Text(title)
                         .font(.title2.bold())
                         .foregroundColor(.blue)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.bottom, 8)
                 }
                 
                 if let specifications = intelligence.specifications {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("🔹 Specifications")
-                            .font(.headline)
-                        Text(specifications)
-                            .font(.body)
-                    }
-                    .padding()
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(12)
+                    IntelligenceCard(
+                        title: "🔧 Specifications",
+                        content: specifications,
+                        color: .blue
+                    )
                 }
                 
-                if let advantages = intelligence.advantages {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("🔸 Advantages")
-                            .font(.headline)
-                        Text(advantages)
-                            .font(.body)
-                    }
-                    .padding()
-                    .background(Color.green.opacity(0.1))
-                    .cornerRadius(12)
+                if let features = intelligence.features {
+                    IntelligenceCard(
+                        title: "✨ Features",
+                        content: features,
+                        color: .purple
+                    )
                 }
                 
-                if let disadvantages = intelligence.disadvantages {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("⚠️ Disadvantages")
-                            .font(.headline)
-                        Text(disadvantages)
-                            .font(.body)
-                    }
-                    .padding()
-                    .background(Color.orange.opacity(0.1))
-                    .cornerRadius(12)
+                if let safety = intelligence.safety {
+                    IntelligenceCard(
+                        title: "🛡️ Safety",
+                        content: safety,
+                        color: .green
+                    )
                 }
                 
-                if let insights = intelligence.insights {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("💡 Market Insights")
-                            .font(.headline)
-                        Text(insights)
-                            .font(.body)
+                if let marketPosition = intelligence.marketPosition {
+                    IntelligenceCard(
+                        title: "📊 Market Position",
+                        content: marketPosition,
+                        color: .orange
+                    )
+                }
+                
+                HStack(spacing: 12) {
+                    if let pros = intelligence.pros {
+                        IntelligenceCard(
+                            title: "✅ Pros",
+                            content: pros,
+                            color: .green
+                        )
                     }
-                    .padding()
-                    .background(Color.purple.opacity(0.1))
-                    .cornerRadius(12)
+                    
+                    if let cons = intelligence.cons {
+                        IntelligenceCard(
+                            title: "❌ Cons",
+                            content: cons,
+                            color: .red
+                        )
+                    }
+                }
+                
+                if let ownership = intelligence.ownership {
+                    IntelligenceCard(
+                        title: "🏠 Ownership Experience",
+                        content: ownership,
+                        color: .indigo
+                    )
+                }
+                
+                if let recommendation = intelligence.recommendation {
+                    IntelligenceCard(
+                        title: "🎯 Recommendation",
+                        content: recommendation,
+                        color: .blue,
+                        isHighlighted: true
+                    )
                 }
             }
             .padding(.horizontal)
         }
+    }
+}
+
+struct IntelligenceCard: View {
+    let title: String
+    let content: String
+    let color: Color
+    var isHighlighted: Bool = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(color)
+            
+            Text(content)
+                .font(.body)
+                .foregroundColor(.primary)
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(color.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(color.opacity(0.3), lineWidth: isHighlighted ? 2 : 1)
+                )
+        )
+        .shadow(color: color.opacity(0.1), radius: 4, x: 0, y: 2)
     }
 }
 

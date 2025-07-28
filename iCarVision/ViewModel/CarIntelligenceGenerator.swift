@@ -7,17 +7,29 @@ struct CarIntelligence: Equatable {
     @Guide(description: "A comprehensive title for the car model.")
     let title: String
     
-    @Guide(description: "Detailed technical specifications of the car.")
+    @Guide(description: "Key specifications including engine type, performance, fuel efficiency, and drivetrain.")
     let specifications: String
     
-    @Guide(description: "Key advantages and strengths of this car model.")
-    let advantages: String
+    @Guide(description: "Notable features including technology, interior/exterior design, and comfort features.")
+    let features: String
     
-    @Guide(description: "Potential drawbacks or limitations of this car model.")
-    let disadvantages: String
+    @Guide(description: "Safety aspects including ratings and key safety systems.")
+    let safety: String
     
-    @Guide(description: "Additional insights about the car's market position, reliability, or unique features.")
-    let insights: String
+    @Guide(description: "Market position and typical competitors.")
+    let marketPosition: String
+    
+    @Guide(description: "Pros and advantages for potential buyers.")
+    let pros: String
+    
+    @Guide(description: "Cons and potential drawbacks for buyers.")
+    let cons: String
+    
+    @Guide(description: "Real-world ownership impressions including reliability, maintenance, and resale value.")
+    let ownership: String
+    
+    @Guide(description: "Summary recommendation: Who is this car best suited for?")
+    let recommendation: String
 }
 
 @Observable
@@ -33,21 +45,26 @@ final class CarIntelligenceGenerator {
         self.carInfo = carInfo
         self.session = LanguageModelSession(
             instructions: Instructions {
-                "Your job is to generate intelligent, detailed information about cars."
-                
-                "You are an expert automotive analyst with deep knowledge of car specifications, market trends, and consumer insights."
-                
                 """
-                Generate comprehensive information about the car based on:
+                You are an expert automotive analyst with in-depth knowledge of vehicle specifications, market positioning, and consumer needs.
+                
+                Based on the following car details:
                 - Make: \(carInfo.make ?? "Unknown")
                 - Model: \(carInfo.model ?? "Unknown")
                 - Generation: \(carInfo.generation ?? "Unknown")
                 - Years: \(carInfo.years ?? "Unknown")
+                
+                Please generate a well-structured and insightful overview that includes:
+                1. Key specifications (engine type, performance, fuel efficiency, drivetrain).
+                2. Notable features (technology, interior/exterior design, comfort).
+                3. Safety aspects (ratings, key safety systems).
+                4. Market position and typical competitors.
+                5. Pros and cons for potential buyers.
+                6. Real-world ownership impressions (reliability, maintenance, resale value).
+                7. Summary recommendation: Who is this car best suited for?
+                
+                Focus on providing clear, objective, and practical insights that would help a car buyer or enthusiast make informed decisions.
                 """
-                
-                "Provide accurate, factual information about specifications, features, and market positioning."
-                
-                "Focus on practical insights that would be valuable to car buyers and enthusiasts."
             }
         )
     }
@@ -62,8 +79,16 @@ final class CarIntelligenceGenerator {
             Generate comprehensive intelligence about the \(carInfo.make ?? "") \(carInfo.model ?? "") 
             from generation \(carInfo.generation ?? "") (\(carInfo.years ?? "")).
             
-            Provide detailed specifications, advantages, disadvantages, and market insights.
-            Make the information practical and valuable for car buyers.
+            Provide a detailed analysis covering:
+            - Technical specifications and performance
+            - Features and technology
+            - Safety ratings and systems
+            - Market positioning and competition
+            - Pros and cons for buyers
+            - Real-world ownership experience
+            - Target audience recommendation
+            
+            Make the information practical, objective, and valuable for car buyers and enthusiasts.
             """
         }
         

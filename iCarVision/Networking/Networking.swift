@@ -9,11 +9,9 @@ struct CarNetResponse: Decodable {
 }
 
 struct CarInfo: Decodable {
-    let make: String?
-    let model: String?
-    let generation: String?
-    let years: String?
-    let prob: String? //
+    let carName: String?
+    let year: String?
+    let prob: String?
 }
 
 struct CarColor: Decodable {

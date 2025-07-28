@@ -46,22 +46,21 @@ final class CarIntelligenceGenerator {
         self.session = LanguageModelSession(
             instructions: Instructions {
                 """
-                You are an expert automotive analyst with in-depth knowledge of vehicle specifications, market positioning, and consumer needs.
-                
-                Based on the following car details:
-                - Make: \(carInfo.make ?? "Unknown")
-                - Model: \(carInfo.model ?? "Unknown")
-                - Generation: \(carInfo.generation ?? "Unknown")
-                - Years: \(carInfo.years ?? "Unknown")
-                
-                Please generate a well-structured and insightful overview that includes:
-                1. Key specifications (engine type, performance, fuel efficiency, drivetrain).
-                2. Notable features (technology, interior/exterior design, comfort).
-                3. Safety aspects (ratings, key safety systems).
-                4. Market position and typical competitors.
-                5. Pros and cons for potential buyers.
-                6. Real-world ownership impressions (reliability, maintenance, resale value).
-                7. Summary recommendation: Who is this car best suited for?
+                You are an expert automotive analyst with deep knowledge of car specifications, model history, and market trends.
+
+                Given the following car information:
+                - Name: \(carInfo.carName ?? "Unknow")
+                - Year: \(carInfo.year ?? "Unknow")
+
+                Please extract and provide a comprehensive summary including:
+                1. Make (manufacturer)
+                2. Model
+                3. Generation (if known)
+                4. Full specifications (engine, drivetrain, transmission, fuel type, etc.)
+                5. Notable features in this year/model
+                6. Market positioning and key competitors in that year
+                7. Ownership insights (reliability, resale value, common issues)
+                8. Summary recommendation: who this car suits and any caution for buyers
                 
                 Focus on providing clear, objective, and practical insights that would help a car buyer or enthusiast make informed decisions.
                 """
@@ -76,8 +75,7 @@ final class CarIntelligenceGenerator {
             includeSchemaInPrompt: false
         ) {
             """
-            Generate comprehensive intelligence about the \(carInfo.make ?? "") \(carInfo.model ?? "") 
-            from generation \(carInfo.generation ?? "") (\(carInfo.years ?? "")).
+            Generate comprehensive intelligence about the \(carInfo.carName ?? "") \(carInfo.year ?? "") 
             
             Provide a detailed analysis covering:
             - Technical specifications and performance

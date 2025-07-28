@@ -6,6 +6,18 @@ struct CarDetailView: View {
     @State private var isLoadingIntelligence = false
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) private var dismiss
+    
+    private func extractYearFromString(_ text: String) -> String? {
+        // Extract last 4 characters if they are digits
+        if text.count >= 4 {
+            let last4Chars = String(text.suffix(4))
+            // Check if last 4 characters are digits
+            if last4Chars.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) == nil {
+                return last4Chars
+            }
+        }
+        return nil
+    }
 
     var body: some View {
         NavigationStack {
@@ -60,16 +72,15 @@ struct CarDetailView: View {
 
     @MainActor
     private func generateCarIntelligence() {
-        guard let carName = item.carName,
-              let carBrand = item.carBrand,
-              let carType = item.carType else { return }
+        guard let carName = item.carName else { return }
 
+        // Extract year from carName if it contains 4 digits
+        let year = extractYearFromString(carName)
+        
         let carInfo = CarInfo(
-            make: carBrand,
-            model: carName,
-            generation: carType,
-            years: nil,
-            prob: nil
+            carName: carName,
+            year: year,
+            prob: String(format: "%.2f", item.confidence ?? 0.0)
         )
 
         carIntelligenceGenerator = CarIntelligenceGenerator(carInfo: carInfo)
@@ -94,24 +105,11 @@ struct HeroImageSection: View {
     @Environment(\.colorScheme) var colorScheme
     
     private func formatCarName(_ item: HistoryItem) -> String {
-        var carName = item.carName ?? "Unknown"
+        let carName = item.carName ?? "Unknown Car"
         
         // Clean up car name
         if carName.lowercased() == "unknown" {
-            carName = "Unknown Car"
-        }
-        
-        // Add brand if available
-        if let brand = item.carBrand, !brand.isEmpty, brand.lowercased() != "unknown", brand != "N/A" {
-            carName = "\(brand) \(carName)"
-        }
-        
-        // Add generation if available and not too long
-        if let generation = item.carType, !generation.isEmpty, generation.lowercased() != "unknown", generation != "N/A" {
-            let shortGeneration = generation.components(separatedBy: " ").first ?? generation
-            if shortGeneration.count <= 10 { // Only add if generation is short
-                carName = "\(carName) \(shortGeneration)"
-            }
+            return "Unknown Car"
         }
         
         return carName
@@ -209,8 +207,7 @@ struct CarInfoSection: View {
         VStack(spacing: 20) {
             // Stats Row - Only show if we have at least one piece of data
             if (item.confidence != nil && item.confidence! > 0) ||
-                (item.carColor != nil && !item.carColor!.isEmpty && item.carColor!.lowercased() != "unknown" && item.carColor! != "N/A") ||
-                (item.carType != nil && !item.carType!.isEmpty && item.carType!.lowercased() != "unknown" && item.carType! != "N/A") {
+                (item.carColor != nil && !item.carColor!.isEmpty && item.carColor!.lowercased() != "unknown" && item.carColor! != "N/A") {
                 HStack(spacing: 0) {
                     if let confidence = item.confidence, confidence > 0 {
                         let confidencePercentage = min(confidence, 1.0) * 100
@@ -234,8 +231,7 @@ struct CarInfoSection: View {
                             color: confidenceColor
                         )
 
-                        if (item.carColor != nil && !item.carColor!.isEmpty) ||
-                            (item.carType != nil && !item.carType!.isEmpty) {
+                        if let carColor = item.carColor, !carColor.isEmpty, carColor.lowercased() != "unknown", carColor != "N/A" {
                             Divider()
                                 .frame(height: 40)
                                 .padding(.horizontal, 20)
@@ -248,21 +244,6 @@ struct CarInfoSection: View {
                             label: "Color",
                             icon: "paintpalette.fill",
                             color: .blue
-                        )
-
-                        if let carType = item.carType, !carType.isEmpty, carType.lowercased() != "unknown", carType != "N/A" {
-                            Divider()
-                                .frame(height: 40)
-                                .padding(.horizontal, 20)
-                        }
-                    }
-
-                    if let carType = item.carType, !carType.isEmpty, carType.lowercased() != "unknown", carType != "N/A" {
-                        StatItem(
-                            value: carType.components(separatedBy: " ").first ?? carType,
-                            label: "Generation",
-                            icon: "number.circle.fill",
-                            color: .orange
                         )
                     }
                 }
@@ -288,34 +269,7 @@ struct CarInfoSection: View {
                 .padding(.horizontal, 20)
             }
 
-            // Additional Info
-            if let type = item.carType, !type.isEmpty, type.lowercased() != "unknown", type != "N/A" {
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Image(systemName: "info.circle.fill")
-                            .foregroundStyle(.blue)
-                        Text("Generation Details")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        Spacer()
-                    }
 
-                    Text(type)
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                        .lineSpacing(2)
-                }
-                .padding(16)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(.blue.opacity(0.2), lineWidth: 1)
-                        )
-                )
-                .padding(.horizontal, 20)
-            }
         }
         .padding(.vertical, 20)
     }
@@ -353,6 +307,18 @@ struct AIAnalysisSection: View {
     @Binding var carIntelligenceGenerator: CarIntelligenceGenerator?
     @Binding var isLoadingIntelligence: Bool
     @Environment(\.colorScheme) var colorScheme
+    
+    private func extractYearFromString(_ text: String) -> String? {
+        // Extract last 4 characters if they are digits
+        if text.count >= 4 {
+            let last4Chars = String(text.suffix(4))
+            // Check if last 4 characters are digits
+            if last4Chars.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) == nil {
+                return last4Chars
+            }
+        }
+        return nil
+    }
 
     var body: some View {
 
@@ -369,16 +335,15 @@ struct AIAnalysisSection: View {
     }
 
     private func generateIntelligence() {
-        guard let carName = item.carName,
-              let carBrand = item.carBrand,
-              let carType = item.carType else { return }
+        guard let carName = item.carName else { return }
 
+        // Extract year from carName if it contains 4 digits
+        let year = extractYearFromString(carName)
+        
         let carInfo = CarInfo(
-            make: carBrand,
-            model: carName,
-            generation: carType,
-            years: nil,
-            prob: nil
+            carName: carName,
+            year: year,
+            prob: String(format: "%.2f", item.confidence ?? 0.0)
         )
 
         carIntelligenceGenerator = CarIntelligenceGenerator(carInfo: carInfo)
@@ -750,7 +715,7 @@ struct EnhancedIntelligenceCard: View {
 #Preview("Car Detail View") {
     let sampleItem = HistoryItem(
         carName: "Outlander",
-        carType: "III facelift 2 (2015-2018)",
+        carType: nil,
         carColor: "Gray/Brown",
         carBrand: "Mitsubishi",
         carImageURL: nil,
@@ -763,7 +728,7 @@ struct EnhancedIntelligenceCard: View {
 #Preview("Car Detail View - Dark Mode") {
     let sampleItem = HistoryItem(
         carName: "Outlander",
-        carType: "III facelift 2 (2015-2018)",
+        carType: nil,
         carColor: "Gray/Brown",
         carBrand: "Mitsubishi",
         carImageURL: nil,
@@ -777,7 +742,7 @@ struct EnhancedIntelligenceCard: View {
 #Preview("Hero Image Section") {
     let sampleItem = HistoryItem(
         carName: "Outlander",
-        carType: "III facelift 2 (2015-2018)",
+        carType: nil,
         carColor: "Gray/Brown",
         carBrand: "Mitsubishi",
         carImageURL: nil,
@@ -792,7 +757,7 @@ struct EnhancedIntelligenceCard: View {
 #Preview("Car Info Section") {
     let sampleItem = HistoryItem(
         carName: "Outlander",
-        carType: "III facelift 2 (2015-2018)",
+        carType: nil,
         carColor: "Gray/Brown",
         carBrand: "Mitsubishi",
         carImageURL: nil,

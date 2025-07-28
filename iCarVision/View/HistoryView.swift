@@ -112,24 +112,11 @@ struct HistoryItemCard: View {
     @Environment(\.colorScheme) var colorScheme
     
     private func formatCarName(_ item: HistoryItem) -> String {
-        var carName = item.carName ?? "Unknown"
+        let carName = item.carName ?? "Unknown Car"
         
         // Clean up car name
         if carName.lowercased() == "unknown" {
-            carName = "Unknown Car"
-        }
-        
-        // Add brand if available
-        if let brand = item.carBrand, !brand.isEmpty, brand.lowercased() != "unknown" {
-            carName = "\(brand) \(carName)"
-        }
-        
-        // Add generation if available and not too long
-        if let generation = item.carType, !generation.isEmpty, generation.lowercased() != "unknown" {
-            let shortGeneration = generation.components(separatedBy: " ").first ?? generation
-            if shortGeneration.count <= 10 { // Only add if generation is short
-                carName = "\(carName) \(shortGeneration)"
-            }
+            return "Unknown Car"
         }
         
         return carName
@@ -306,7 +293,7 @@ struct CarPlaceholderView: View {
     viewModel.history = [
         HistoryItem(
             carName: "Outlander",
-            carType: "III facelift 2 (2015-2018)",
+            carType: nil,
             carColor: "Gray/Brown",
             carBrand: "Mitsubishi",
             carImageURL: nil,
@@ -315,7 +302,7 @@ struct CarPlaceholderView: View {
         ),
         HistoryItem(
             carName: "Civic",
-            carType: "11th generation (2022-present)",
+            carType: nil,
             carColor: "White",
             carBrand: "Honda",
             carImageURL: nil,
@@ -324,7 +311,7 @@ struct CarPlaceholderView: View {
         ),
         HistoryItem(
             carName: "Corolla",
-            carType: "12th generation (2019-2023)",
+            carType: nil,
             carColor: "Blue",
             carBrand: "Toyota",
             carImageURL: nil,

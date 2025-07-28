@@ -12,10 +12,8 @@ class ContentViewModel: ObservableObject {
     @Published var carIntelligenceGenerator: CarIntelligenceGenerator?
     @Published var selectedHistoryItem: HistoryItem? = nil
     
-    var make: String? { carnetResponse?.car?.make }
-    var model: String? { carnetResponse?.car?.model }
-    var generation: String? { carnetResponse?.car?.generation }
-    var years: String? { carnetResponse?.car?.years }
+    var carName: String? { carnetResponse?.car?.carName }
+    var year: String? { carnetResponse?.car?.year }
     var prob: String? { carnetResponse?.car?.prob }
     var colorName: String? { carnetResponse?.color?.name }
     var colorProb: Double? { carnetResponse?.color?.probability }
@@ -26,15 +24,15 @@ class ContentViewModel: ObservableObject {
     func addMockToHistoryIfNeeded() {
         guard let car = carnetResponse?.car else { return }
         let item = HistoryItem(
-            carName: car.model,
-            carType: carnetResponse?.car?.generation,
+            carName: car.carName, // Full car name
+            carType: nil, // No longer using generation
             carColor: carnetResponse?.color?.name,
-            carBrand: car.make,
+            carBrand: nil, // No longer using separate brand
             carImageURL: nil, // Nếu có URL ảnh từ API thì truyền vào
             localImage: nil, // Không có ảnh thật, chỉ mock
             confidence: Double(car.prob ?? "")
         )
-        if !history.contains(where: { $0.carName == item.carName && $0.carBrand == item.carBrand }) {
+        if !history.contains(where: { $0.carName == item.carName }) {
             history.insert(item, at: 0)
             saveHistory()
         }
@@ -95,10 +93,8 @@ class ContentViewModel: ObservableObject {
                 print("Car model recognition failed: \(error)")
                 // Use fallback car info
                 carInfo = CarInfo(
-                    make: "Mitsubishi",
-                    model: "Outlander",
-                    generation: "III facelift 2 (2015-2018)",
-                    years: "2015-2018",
+                    carName: "Unknown",
+                    year: "2015-2018",
                     prob: "95.00"
                 )
             }
@@ -149,10 +145,8 @@ class ContentViewModel: ObservableObject {
             
             // Parse car info from classification result
             let carInfo = CarInfo(
-                make: self.extractMake(from: topResult.identifier),
-                model: self.extractModel(from: topResult.identifier),
-                generation: self.extractGeneration(from: topResult.identifier),
-                years: nil,
+                carName: self.extractCarName(from: topResult.identifier),
+                year: self.extractYear(from: topResult.identifier),
                 prob: String(format: "%.2f", topResult.confidence * 100)
             )
             
@@ -189,28 +183,32 @@ class ContentViewModel: ObservableObject {
         try? handler.perform([request])
     }
     
-    private func extractMake(from identifier: String) -> String {
-        // Parse make from classification identifier
-        let components = identifier.components(separatedBy: " ")
-        return components.first ?? "Unknown"
+    private func extractCarName(from identifier: String) -> String {
+        // Extract full car name (all characters except last 4 digits if they exist)
+        if identifier.count >= 4 {
+            let last4Chars = String(identifier.suffix(4))
+            // Check if last 4 characters are digits
+            if last4Chars.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) == nil {
+                // Last 4 characters are digits, remove them from car name
+                let carName = String(identifier.dropLast(4)).trimmingCharacters(in: .whitespaces)
+                return carName.isEmpty ? "Unknown Car" : carName
+            }
+        }
+        
+        // If no year found or identifier is too short, return full identifier
+        return identifier.isEmpty ? "Unknown Car" : identifier
     }
     
-    private func extractModel(from identifier: String) -> String {
-        // Parse model from classification identifier
-        let components = identifier.components(separatedBy: " ")
-        if components.count > 1 {
-            return components[1]
+    private func extractYear(from identifier: String) -> String? {
+        // Extract last 4 characters if they are digits
+        if identifier.count >= 4 {
+            let last4Chars = String(identifier.suffix(4))
+            // Check if last 4 characters are digits
+            if last4Chars.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) == nil {
+                return last4Chars
+            }
         }
-        return "Unknown"
-    }
-    
-    private func extractGeneration(from identifier: String) -> String {
-        // Parse generation from classification identifier
-        let components = identifier.components(separatedBy: " ")
-        if components.count > 2 {
-            return components.dropFirst(2).joined(separator: " ")
-        }
-        return "Unknown"
+        return nil
     }
     
     private func createMockResponse(from carInfo: CarInfo, carColor: String) {
@@ -238,10 +236,10 @@ class ContentViewModel: ObservableObject {
     func saveToHistory(carImage: UIImage, carInfo: CarInfo, carColor: String) {
         let confidenceValue = Double(carInfo.prob ?? "0") ?? 0.0
         let item = HistoryItem(
-            carName: carInfo.model,
-            carType: carInfo.generation,
+            carName: carInfo.carName, // Full car name (e.g., "Mitsubishi Outlander")
+            carType: nil, // No longer using generation
             carColor: carColor,
-            carBrand: carInfo.make,
+            carBrand: nil, // No longer using separate brand
             carImageURL: nil,
             localImage: carImage.jpegData(compressionQuality: 0.8),
             confidence: confidenceValue / 100.0
@@ -265,7 +263,7 @@ class ContentViewModel: ObservableObject {
     
     // Hàm mock dữ liệu mẫu cho UI demo
     func mockCarnetResponse() {
-        let car = CarInfo(make: "Mitsubishi", model: "Outlander", generation: "III facelift 2 (2015-2018)", years: "2015-2018", prob: "100.00")
+        let car = CarInfo(carName: "Mitsubishi Outlander", year: "2015", prob: "100.00")
         let color = CarColor(name: "Gray/Brown", probability: 0.7926)
         let angle = CarAngle(name: "Front Left", probability: 1.0)
         let bbox = CarBBox(br_x: 0.9119, br_y: 0.9327, tl_x: 0.1196, tl_y: 0.4292)

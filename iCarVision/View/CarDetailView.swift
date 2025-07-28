@@ -6,7 +6,7 @@ struct CarDetailView: View {
     @State private var isLoadingIntelligence = false
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
@@ -15,21 +15,21 @@ struct CarDetailView: View {
                     LinearGradient(
                         gradient: Gradient(colors: [
                             Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.08),
-                            Color.purple.opacity(colorScheme == .dark ? 0.15 : 0.08)
+                            Color.purple.opacity(colorScheme == .dark ? 0.15 : 0.08),
                         ]),
                         startPoint: .top,
                         endPoint: .bottom
                     )
                     .ignoresSafeArea()
-                    
+
                     ScrollView {
                         VStack(spacing: 0) {
                             // Hero Image Section
                             HeroImageSection(item: item, geometry: geometry)
-                            
+
                             // Car Info Section
                             CarInfoSection(item: item)
-                            
+
                             // AI Analysis Section
                             AIAnalysisSection(
                                 item: item,
@@ -52,7 +52,7 @@ struct CarDetailView: View {
                             .foregroundStyle(.primary)
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { /* Share action */ }) {
                         Image(systemName: "square.and.arrow.up")
@@ -66,13 +66,13 @@ struct CarDetailView: View {
             generateCarIntelligence()
         }
     }
-    
+
     @MainActor
     private func generateCarIntelligence() {
         guard let carName = item.carName,
               let carBrand = item.carBrand,
               let carType = item.carType else { return }
-        
+
         let carInfo = CarInfo(
             make: carBrand,
             model: carName,
@@ -80,10 +80,10 @@ struct CarDetailView: View {
             years: nil,
             prob: nil
         )
-        
+
         carIntelligenceGenerator = CarIntelligenceGenerator(carInfo: carInfo)
         isLoadingIntelligence = true
-        
+
         Task {
             do {
                 try await carIntelligenceGenerator?.generateCarIntelligence()
@@ -96,11 +96,12 @@ struct CarDetailView: View {
 }
 
 // MARK: - Hero Image Section
+
 struct HeroImageSection: View {
     let item: HistoryItem
     let geometry: GeometryProxy
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         ZStack(alignment: .bottom) {
             // Background image or placeholder
@@ -114,19 +115,19 @@ struct HeroImageSection: View {
                 CarHeroPlaceholder()
                     .frame(width: geometry.size.width, height: geometry.size.height * 0.4)
             }
-            
+
             // Gradient overlay
             LinearGradient(
                 gradient: Gradient(colors: [
                     .clear,
                     .black.opacity(0.3),
-                    .black.opacity(0.6)
+                    .black.opacity(0.6),
                 ]),
                 startPoint: .top,
                 endPoint: .bottom
             )
             .frame(height: geometry.size.height * 0.4)
-            
+
             // Car name overlay
             VStack(alignment: .leading, spacing: 8) {
                 Text(item.carName ?? "Unknown Car")
@@ -134,7 +135,7 @@ struct HeroImageSection: View {
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.5), radius: 4, x: 0, y: 2)
-                
+
                 if let brand = item.carBrand, !brand.isEmpty {
                     Text(brand)
                         .font(.title2)
@@ -152,23 +153,23 @@ struct HeroImageSection: View {
 
 struct CarHeroPlaceholder: View {
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(colors: [
                     colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6),
-                    colorScheme == .dark ? Color(.systemGray6) : Color(.systemGray5)
+                    colorScheme == .dark ? Color(.systemGray6) : Color(.systemGray5),
                 ]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-            
+
             VStack(spacing: 16) {
                 Image(systemName: "car.fill")
                     .font(.system(size: 80, weight: .light))
                     .foregroundStyle(.tertiary)
-                
+
                 Text("Car Image")
                     .font(.title2)
                     .fontWeight(.medium)
@@ -179,16 +180,17 @@ struct CarHeroPlaceholder: View {
 }
 
 // MARK: - Car Info Section
+
 struct CarInfoSection: View {
     let item: HistoryItem
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         VStack(spacing: 20) {
             // Stats Row - Only show if we have at least one piece of data
-            if (item.confidence != nil && item.confidence! > 0) || 
-               (item.carColor != nil && !item.carColor!.isEmpty) || 
-               (item.carType != nil && !item.carType!.isEmpty) {
+            if (item.confidence != nil && item.confidence! > 0) ||
+                (item.carColor != nil && !item.carColor!.isEmpty) ||
+                (item.carType != nil && !item.carType!.isEmpty) {
                 HStack(spacing: 0) {
                     if let confidence = item.confidence, confidence > 0 {
                         StatItem(
@@ -197,15 +199,15 @@ struct CarInfoSection: View {
                             icon: "checkmark.circle.fill",
                             color: .green
                         )
-                        
-                        if (item.carColor != nil && !item.carColor!.isEmpty) || 
-                           (item.carType != nil && !item.carType!.isEmpty) {
+
+                        if (item.carColor != nil && !item.carColor!.isEmpty) ||
+                            (item.carType != nil && !item.carType!.isEmpty) {
                             Divider()
                                 .frame(height: 40)
                                 .padding(.horizontal, 20)
                         }
                     }
-                    
+
                     if let carColor = item.carColor, !carColor.isEmpty {
                         StatItem(
                             value: carColor,
@@ -213,14 +215,14 @@ struct CarInfoSection: View {
                             icon: "paintpalette.fill",
                             color: .blue
                         )
-                        
+
                         if item.carType != nil && !item.carType!.isEmpty {
                             Divider()
                                 .frame(height: 40)
                                 .padding(.horizontal, 20)
                         }
                     }
-                    
+
                     if let carType = item.carType, !carType.isEmpty {
                         StatItem(
                             value: carType.components(separatedBy: " ").first ?? carType,
@@ -251,9 +253,9 @@ struct CarInfoSection: View {
                 )
                 .padding(.horizontal, 20)
             }
-            
+
             // Additional Info
-            if let type = item.carType, !type.isEmpty {
+            if let type = item.carType, type != "N/A" {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Image(systemName: "info.circle.fill")
@@ -263,7 +265,7 @@ struct CarInfoSection: View {
                             .fontWeight(.semibold)
                         Spacer()
                     }
-                    
+
                     Text(type)
                         .font(.body)
                         .foregroundStyle(.secondary)
@@ -290,18 +292,18 @@ struct StatItem: View {
     let label: String
     let icon: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundStyle(color)
-            
+
             Text(value)
                 .font(.title3)
                 .fontWeight(.bold)
                 .foregroundStyle(.primary)
-            
+
             Text(label)
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -311,60 +313,48 @@ struct StatItem: View {
 }
 
 // MARK: - AI Analysis Section
+
 struct AIAnalysisSection: View {
     let item: HistoryItem
     @Binding var carIntelligenceGenerator: CarIntelligenceGenerator?
     @Binding var isLoadingIntelligence: Bool
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         VStack(spacing: 20) {
             // Section Header
-            HStack {
-                Image(systemName: "brain.head.profile")
+
+            VStack(alignment: .center, spacing: 2) {
+                Text("AI-Powered Analysis")
                     .font(.title2)
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("AI-Powered Analysis")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.primary)
-                    
-                    Text("Intelligent insights about this vehicle")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                
-                Spacer()
+                    .fontWeight(.bold)
+                    .foregroundStyle(.primary)
+
+                Text("Intelligent insights about this vehicle")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-            .padding(.horizontal, 20)
-            
-            // Content
-            if isLoadingIntelligence {
-                LoadingIntelligenceView()
-            } else if let intelligence = carIntelligenceGenerator?.carIntelligence {
-                EnhancedCarIntelligenceView(intelligence: intelligence)
-            } else {
-                GenerateIntelligenceButton {
-                    generateIntelligence()
-                }
+
+            Spacer()
+        }
+
+        // Content
+        if isLoadingIntelligence {
+            LoadingIntelligenceView()
+        } else if let intelligence = carIntelligenceGenerator?.carIntelligence {
+            EnhancedCarIntelligenceView(intelligence: intelligence)
+        } else {
+            GenerateIntelligenceButton {
+                generateIntelligence()
             }
         }
-        .padding(.vertical, 20)
     }
-    
+
     private func generateIntelligence() {
         guard let carName = item.carName,
               let carBrand = item.carBrand,
               let carType = item.carType else { return }
-        
+
         let carInfo = CarInfo(
             make: carBrand,
             model: carName,
@@ -372,10 +362,10 @@ struct AIAnalysisSection: View {
             years: nil,
             prob: nil
         )
-        
+
         carIntelligenceGenerator = CarIntelligenceGenerator(carInfo: carInfo)
         isLoadingIntelligence = true
-        
+
         Task {
             do {
                 try await carIntelligenceGenerator?.generateCarIntelligence()
@@ -393,7 +383,7 @@ struct AIAnalysisSection: View {
 
 struct LoadingIntelligenceView: View {
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         VStack(spacing: 20) {
             // Animated loading icon
@@ -408,7 +398,7 @@ struct LoadingIntelligenceView: View {
                         lineWidth: 4
                     )
                     .frame(width: 60, height: 60)
-                
+
                 Circle()
                     .trim(from: 0, to: 0.7)
                     .stroke(
@@ -422,18 +412,18 @@ struct LoadingIntelligenceView: View {
                     .frame(width: 60, height: 60)
                     .rotationEffect(.degrees(-90))
                     .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: UUID())
-                
+
                 Image(systemName: "brain.head.profile")
                     .font(.title2)
                     .foregroundStyle(.blue)
             }
-            
+
             VStack(spacing: 8) {
                 Text("Analyzing Vehicle...")
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundStyle(.primary)
-                
+
                 Text("Our AI is generating comprehensive insights about this car")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -469,25 +459,25 @@ struct LoadingIntelligenceView: View {
 struct GenerateIntelligenceButton: View {
     let action: () -> Void
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: "sparkles")
                     .font(.title3)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Generate AI Analysis")
                         .font(.headline)
                         .fontWeight(.semibold)
-                    
+
                     Text("Get intelligent insights about this vehicle")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
@@ -499,7 +489,7 @@ struct GenerateIntelligenceButton: View {
                         LinearGradient(
                             colors: [
                                 colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground),
-                                colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6)
+                                colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6),
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -530,10 +520,11 @@ struct GenerateIntelligenceButton: View {
 }
 
 // MARK: - Enhanced Car Intelligence View
+
 struct EnhancedCarIntelligenceView: View {
     let intelligence: CarIntelligence.PartiallyGenerated
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         VStack(spacing: 16) {
             if let title = intelligence.title {
@@ -549,7 +540,7 @@ struct EnhancedCarIntelligenceView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.bottom, 8)
             }
-            
+
             LazyVStack(spacing: 16) {
                 if let specifications = intelligence.specifications {
                     EnhancedIntelligenceCard(
@@ -559,7 +550,7 @@ struct EnhancedCarIntelligenceView: View {
                         icon: "gearshape.fill"
                     )
                 }
-                
+
                 if let features = intelligence.features {
                     EnhancedIntelligenceCard(
                         title: "Features",
@@ -568,16 +559,16 @@ struct EnhancedCarIntelligenceView: View {
                         icon: "star.fill"
                     )
                 }
-                
+
                 if let safety = intelligence.safety {
                     EnhancedIntelligenceCard(
-                        title: "🛡️ Safety",
+                        title: "Safety",
                         content: safety,
                         color: .green,
                         icon: "shield.fill"
                     )
                 }
-                
+
                 if let marketPosition = intelligence.marketPosition {
                     EnhancedIntelligenceCard(
                         title: "Market Position",
@@ -586,7 +577,7 @@ struct EnhancedCarIntelligenceView: View {
                         icon: "chart.bar.fill"
                     )
                 }
-                
+
                 // Pros and Cons side by side
                 HStack(spacing: 12) {
                     if let pros = intelligence.pros {
@@ -597,7 +588,7 @@ struct EnhancedCarIntelligenceView: View {
                             icon: "checkmark.circle.fill"
                         )
                     }
-                    
+
                     if let cons = intelligence.cons {
                         EnhancedIntelligenceCard(
                             title: "Cons",
@@ -607,7 +598,7 @@ struct EnhancedCarIntelligenceView: View {
                         )
                     }
                 }
-                
+
                 if let ownership = intelligence.ownership {
                     EnhancedIntelligenceCard(
                         title: "Ownership Experience",
@@ -616,7 +607,7 @@ struct EnhancedCarIntelligenceView: View {
                         icon: "house.fill"
                     )
                 }
-                
+
                 if let recommendation = intelligence.recommendation {
                     EnhancedIntelligenceCard(
                         title: "Recommendation",
@@ -639,7 +630,7 @@ struct EnhancedIntelligenceCard: View {
     let icon: String
     var isHighlighted: Bool = false
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -647,14 +638,14 @@ struct EnhancedIntelligenceCard: View {
                     .font(.title3)
                     .foregroundStyle(color)
                     .frame(width: 24)
-                
+
                 Text(title)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundStyle(color)
-                
+
                 Spacer()
-                
+
                 if isHighlighted {
                     Image(systemName: "star.fill")
                         .font(.caption)
@@ -662,7 +653,7 @@ struct EnhancedIntelligenceCard: View {
                         .symbolEffect(.bounce, options: .repeating)
                 }
             }
-            
+
             Text(content)
                 .font(.body)
                 .foregroundStyle(.primary)
@@ -672,8 +663,8 @@ struct EnhancedIntelligenceCard: View {
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(
-                    colorScheme == .dark 
-                        ? color.opacity(0.15) 
+                    colorScheme == .dark
+                        ? color.opacity(0.15)
                         : color.opacity(0.08)
                 )
                 .overlay(
@@ -685,8 +676,8 @@ struct EnhancedIntelligenceCard: View {
                 )
         )
         .shadow(
-            color: colorScheme == .dark 
-                ? color.opacity(0.2) 
+            color: colorScheme == .dark
+                ? color.opacity(0.2)
                 : color.opacity(0.1),
             radius: isHighlighted ? 8 : 4,
             x: 0,
@@ -698,6 +689,7 @@ struct EnhancedIntelligenceCard: View {
 }
 
 // MARK: - Previews
+
 #Preview("Car Detail View") {
     let sampleItem = HistoryItem(
         carName: "Outlander",
@@ -771,7 +763,7 @@ struct EnhancedIntelligenceCard: View {
             color: .blue,
             icon: "gearshape.fill"
         )
-        
+
         EnhancedIntelligenceCard(
             title: "🎯 Recommendation",
             content: "Perfect for families seeking a reliable, spacious SUV with good fuel economy and comfortable ride quality.",
@@ -781,4 +773,4 @@ struct EnhancedIntelligenceCard: View {
         )
     }
     .padding()
-} 
+}

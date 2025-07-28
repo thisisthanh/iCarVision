@@ -6,6 +6,7 @@ struct RecognitionView: View {
     @State private var pickerSource: UIImagePickerController.SourceType = .photoLibrary
     @State private var showSourceActionSheet = false
     @State private var gradientRotation: Double = 0
+    @State private var showCameraAlert = false
     
     var body: some View {
         ZStack {
@@ -219,8 +220,12 @@ struct RecognitionView: View {
                             .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
                         }
                         Button(action: {
-                            pickerSource = .camera
-                            showImagePicker = true
+                            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                                pickerSource = .camera
+                                showImagePicker = true
+                            } else {
+                                showCameraAlert = true
+                            }
                         }) {
                             HStack {
                                 Image(systemName: "camera")
@@ -267,6 +272,11 @@ struct RecognitionView: View {
                         }
                     }
                 ))
+            }
+            .alert("Camera Not Available", isPresented: $showCameraAlert) {
+                Button("OK") { }
+            } message: {
+                Text("Camera is not available on this device. Please use the Library button to select photos.")
             }
         }
     }

@@ -10,39 +10,39 @@ struct RecognitionView: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                // Background gradient
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.08),
-                        Color.purple.opacity(colorScheme == .dark ? 0.15 : 0.08),
-                    ]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
-                
-                ScrollView {
-                    VStack(spacing: 32) {
-                        // Image Section
-                        ImageSection(viewModel: viewModel, gradientRotation: $gradientRotation)
-                        
-                                                    // Action Buttons
-                            ActionButtonsSection(
-                                viewModel: viewModel,
-                                showImagePicker: $showImagePicker,
-                                pickerSource: $pickerSource,
-                                showCameraAlert: $showCameraAlert
-                            )
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 40)
+        ZStack {
+            // Background gradient
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.08),
+                    Color.purple.opacity(colorScheme == .dark ? 0.15 : 0.08),
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea(.all, edges: .bottom)
+            
+            ScrollView {
+                VStack(spacing: 32) {
+                    // Image Section
+                    ImageSection(viewModel: viewModel, gradientRotation: $gradientRotation)
+                    
+                    // Action Buttons
+                    ActionButtonsSection(
+                        viewModel: viewModel,
+                        showImagePicker: $showImagePicker,
+                        pickerSource: $pickerSource,
+                        showCameraAlert: $showCameraAlert
+                    )
                 }
-                .scrollIndicators(.hidden)
-            }
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 40)
+                            }
+            .scrollIndicators(.hidden)
             .navigationTitle("Car Recognition")
             .navigationBarTitleDisplayMode(.large)
+
         }
         
         .sheet(isPresented: $showImagePicker) {

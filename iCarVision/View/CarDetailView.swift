@@ -149,18 +149,18 @@ struct HeroImageSection: View {
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.5), radius: 4, x: 0, y: 2)
 
-                if let color = item.carColor, !color.isEmpty, color.lowercased() != "unknown", color != "N/A" {
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(Color.gray)
-                            .frame(width: 10, height: 10)
-                        Text(color)
-                            .font(.title3)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.white.opacity(0.9))
-                            .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
-                    }
-                }
+//                if let color = item.carColor, !color.isEmpty, color.lowercased() != "unknown", color != "N/A" {
+//                    HStack(spacing: 6) {
+//                        Circle()
+//                            .fill(Color.gray)
+//                            .frame(width: 10, height: 10)
+//                        Text(color)
+//                            .font(.title3)
+//                            .fontWeight(.medium)
+//                            .foregroundStyle(.white.opacity(0.9))
+//                            .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+//                    }
+//                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 20)
@@ -382,94 +382,73 @@ struct AIAnalysisSection: View {
 
 struct LoadingIntelligenceView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State private var progress: Double = 0.0
     @State private var showContent = false
+    @State private var rotationAngle: Double = 0
 
     var body: some View {
         VStack(spacing: 20) {
             // Header with sparkles icon
-            Label("Generate AI Analysis", systemImage: "sparkles")
+            Label("Generating AI Analysis", systemImage: "sparkles")
                 .fontWeight(.bold)
                 .font(.title3)
                 .foregroundStyle(
                     LinearGradient(
-                        colors: [.red, .orange, .yellow, .green, .blue, .indigo, .purple, .red],
+                        colors: [.blue, .purple, .pink],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
                 )
-                .hueRotation(.degrees(progress * 360))
-                .animation(.linear(duration: 3).repeatForever(autoreverses: false), value: progress)
                 .opacity(showContent ? 1 : 0)
                 .animation(.easeInOut(duration: 0.5), value: showContent)
             
-            // Progress bar
-            VStack(spacing: 8) {
-                ProgressView(value: progress, total: 1.0)
-                    .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-                    .scaleEffect(x: 1, y: 2, anchor: .center)
-                    .frame(height: 8)
-                
-                Text("Analyzing vehicle data... \(Int(progress * 100))%")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .opacity(showContent ? 1 : 0)
-                    .animation(.easeInOut(duration: 0.5).delay(0.2), value: showContent)
-            }
-            .padding(.horizontal, 20)
-        }
-        .padding(20)
-        .background(
             ZStack {
-                // Base background
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))
-                
-                // Animated gradient border
-                RoundedRectangle(cornerRadius: 16)
+                Circle()
                     .stroke(
                         LinearGradient(
-                            colors: [.red, .orange, .yellow, .green, .blue, .indigo, .purple, .red],
+                            colors: [.blue.opacity(0.3), .purple.opacity(0.3)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
-                        lineWidth: 2
+                        lineWidth: 3
                     )
-                    .hueRotation(.degrees(progress * 360))
-                    .animation(.linear(duration: 3).repeatForever(autoreverses: false), value: progress)
+                    .frame(width: 60, height: 60)
+                
+                Circle()
+                    .trim(from: 0, to: 0.7)
+                    .stroke(
+                        LinearGradient(
+                            colors: [.blue, .purple],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        style: StrokeStyle(lineWidth: 3, lineCap: .round)
+                    )
+                    .frame(width: 60, height: 60)
+                    .rotationEffect(.degrees(rotationAngle))
+                    .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: rotationAngle)
+                
+                Image(systemName: "brain.fill")
+                    .font(.title2)
+                    .foregroundStyle(.blue)
+                    .opacity(showContent ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.5).delay(0.3), value: showContent)
             }
-        )
-        .shadow(
-            color: colorScheme == .dark ? .black.opacity(0.2) : .black.opacity(0.05),
-            radius: 8,
-            x: 0,
-            y: 2
-        )
-        .padding(.horizontal, 20)
+            
+            Text("Analyzing vehicle data and generating insights...")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .opacity(showContent ? 1 : 0)
+                .animation(.easeInOut(duration: 0.5).delay(0.2), value: showContent)
+        }
         .onAppear {
-            startProgressAnimation()
+            startLoadingAnimation()
         }
     }
     
-    private func startProgressAnimation() {
+    private func startLoadingAnimation() {
         showContent = true
-        
-        // Simulate progress animation
-        withAnimation(.easeInOut(duration: 0.5)) {
-            progress = 0.3
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            withAnimation(.easeInOut(duration: 0.8)) {
-                progress = 0.7
-            }
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            withAnimation(.easeInOut(duration: 1.0)) {
-                progress = 1.0
-            }
-        }
+        rotationAngle = 360
     }
 }
 
@@ -541,6 +520,9 @@ struct GenerateIntelligenceButton: View {
 struct EnhancedCarIntelligenceView: View {
     let intelligence: CarIntelligence.PartiallyGenerated
     @Environment(\.colorScheme) var colorScheme
+    @State private var showTitle = false
+    @State private var showCards = false
+    @State private var visibleCards: Set<String> = []
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -557,10 +539,15 @@ struct EnhancedCarIntelligenceView: View {
                         )
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.bottom, 8)
+                        .opacity(showTitle ? 1 : 0)
+                        .offset(y: showTitle ? 0 : 20)
+                        .animation(.easeOut(duration: 0.6), value: showTitle)
                     
                     Text("AI can make mistakes. Check important info.")
                         .font(.caption)
                         .foregroundColor(.secondary)
+                        .opacity(showTitle ? 1 : 0)
+                        .animation(.easeOut(duration: 0.6).delay(0.2), value: showTitle)
                 }
             }
 
@@ -570,7 +557,8 @@ struct EnhancedCarIntelligenceView: View {
                         title: "Specifications",
                         content: specifications,
                         color: .blue,
-                        icon: "gearshape.fill"
+                        icon: "gearshape.fill",
+                        isVisible: visibleCards.contains("specifications")
                     )
                 }
 
@@ -579,7 +567,8 @@ struct EnhancedCarIntelligenceView: View {
                         title: "Features",
                         content: features,
                         color: .purple,
-                        icon: "star.fill"
+                        icon: "star.fill",
+                        isVisible: visibleCards.contains("features")
                     )
                 }
 
@@ -588,7 +577,8 @@ struct EnhancedCarIntelligenceView: View {
                         title: "Safety",
                         content: safety,
                         color: .green,
-                        icon: "shield.fill"
+                        icon: "shield.fill",
+                        isVisible: visibleCards.contains("safety")
                     )
                 }
 
@@ -597,7 +587,8 @@ struct EnhancedCarIntelligenceView: View {
                         title: "Market Position",
                         content: marketPosition,
                         color: .orange,
-                        icon: "chart.bar.fill"
+                        icon: "chart.bar.fill",
+                        isVisible: visibleCards.contains("marketPosition")
                     )
                 }
 
@@ -608,7 +599,8 @@ struct EnhancedCarIntelligenceView: View {
                             title: "Pros",
                             content: pros,
                             color: .green,
-                            icon: "checkmark.circle.fill"
+                            icon: "checkmark.circle.fill",
+                            isVisible: visibleCards.contains("pros")
                         )
                     }
 
@@ -617,7 +609,8 @@ struct EnhancedCarIntelligenceView: View {
                             title: "Cons",
                             content: cons,
                             color: .red,
-                            icon: "xmark.circle.fill"
+                            icon: "xmark.circle.fill",
+                            isVisible: visibleCards.contains("cons")
                         )
                     }
                 }
@@ -627,7 +620,8 @@ struct EnhancedCarIntelligenceView: View {
                         title: "Ownership Experience",
                         content: ownership,
                         color: .indigo,
-                        icon: "house.fill"
+                        icon: "house.fill",
+                        isVisible: visibleCards.contains("ownership")
                     )
                 }
 
@@ -637,11 +631,36 @@ struct EnhancedCarIntelligenceView: View {
                         content: recommendation,
                         color: .blue,
                         icon: "target",
-                        isHighlighted: true
+                        isHighlighted: true,
+                        isVisible: visibleCards.contains("recommendation")
                     )
                 }
             }
             .padding(.horizontal, 20)
+        }
+        .onAppear {
+            startStaggeredAnimation()
+        }
+    }
+    
+    private func startStaggeredAnimation() {
+        // Show title first
+        withAnimation(.easeOut(duration: 0.6)) {
+            showTitle = true
+        }
+        
+        // Show cards one by one with delay
+        let cardTypes = [
+            "specifications", "features", "safety", "marketPosition", 
+            "pros", "cons", "ownership", "recommendation"
+        ]
+        
+        for (index, cardType) in cardTypes.enumerated() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8 + Double(index) * 0.2) {
+                withAnimation(.easeOut(duration: 0.5)) {
+                    _ = visibleCards.insert(cardType)
+                }
+            }
         }
     }
 }
@@ -652,6 +671,7 @@ struct EnhancedIntelligenceCard: View {
     let color: Color
     let icon: String
     var isHighlighted: Bool = false
+    var isVisible: Bool = true
     @Environment(\.colorScheme) var colorScheme
     
     private func formatContent(_ text: String) -> AttributedString {
@@ -722,6 +742,9 @@ struct EnhancedIntelligenceCard: View {
             y: isHighlighted ? 4 : 2
         )
         .scaleEffect(isHighlighted ? 1.02 : 1.0)
+        .opacity(isVisible ? 1 : 0)
+        .offset(y: isVisible ? 0 : 30)
+        .animation(.easeOut(duration: 0.5), value: isVisible)
         .animation(.easeInOut(duration: 0.2), value: isHighlighted)
     }
 }
